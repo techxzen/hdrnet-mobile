@@ -19,10 +19,10 @@ def show_rgb(input_path, height, width):
 
 
 
-
 def main():
-    if (len(sys.argv[1]) < 4):
+    if (len(sys.argv) < 4):
         print("Error: use python show_rgb.py xx.rgb h w")
+        exit(-1)
     input_path = sys.argv[1]
     height = np.int(sys.argv[2])
     width  = np.int(sys.argv[3])
