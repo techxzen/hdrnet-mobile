@@ -35,5 +35,7 @@ run:
 
 .PHONY:clean
 clean:
-	find ${DIR_OBJ} -name *.o -exec rm -rf {}
+	-rm $(OBJ)
+	-rm $(BIN_OBJECT)
+	-rm $(BIN_TARGET)
 
