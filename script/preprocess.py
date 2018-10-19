@@ -8,7 +8,7 @@ import numpy as np
 
 def main():
     ''' read image '''
-    input_file = "/home/chen/myworkspace/projects/hdrnet-mobile/sample_data/input.png"
+    input_file = "/home/chen/myworkspace/projects/hdrnet-mobile/../sample_data/input.png"
     input_img = cv2.imread(input_file, -1)
     if input_img.shape[2] == 4:
         log.info("Input {} has 4 channels, dropping alpha".format(input_path))

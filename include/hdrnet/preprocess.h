@@ -2,6 +2,8 @@
 #ifndef __PREPROCESS_H
 #define __PREPROCESS_H
 
-int normalize_data(char * char_data, float * float32_data);
+#include "hdrnet/RGBData.h"
+
+int normalize_data(RGBData<char> * char_data, RGBData<float> * float_data);
 
 #endif // __PREPROCESS_H

@@ -22,6 +22,7 @@ def img_to_rgb(input_path):
     input_path_name = input_path_basename.split('.')[0]
     input_path_type = input_path_basename.split('.')[1]
     output_path = input_path_dirname + '/' + input_path_name + '_%dx%d.rgb' %(height, width)
+    print(input_img.dtype)
     input_img.tofile(output_path)
     print(output_path)
 

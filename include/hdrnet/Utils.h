@@ -4,13 +4,7 @@
 #ifndef __UTILS_H
 #define __UTILS_H
 
-class Utils final
-{
-public:
-    static void get_data_from_rgb_file(char * rgb_data, const char * file_name);
-
-    static void save_data_to_rgb_file(char * rgb_data, const char * file_name);
-
-};
+#define LOGE(x...) printf(x)
+#define LOGD(x...) printf(x)
 
 #endif // __UTILS_H

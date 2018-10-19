@@ -1,21 +1,23 @@
 
-
+#include "hdrnet/Utils.h"
 #include "hdrnet/hdrnet_api.h"
 #include "hdrnet/preprocess.h"
 #include <cstdio>
 
 
-int run_hdrnet(void * input_data, void * output_data, int height, int width, int stride)
+int run_hdrnet(RGBData<char> * rgb_data)
 {
-    char * input_rgb = (char *)input_data;//-------- static_cast ? dynamic_cast ?
+    int ret = 0;
 
-    float * float_data = nullptr;
+    RGBData<float> float_rgb_data(rgb_data->get_height(), rgb_data->get_width());
 
-    normalize_data(input_rgb, float_data);
+    ret = normalize_data(rgb_data, &float_rgb_data);
+    if (0 != ret)
+    {
+        LOGE("Error: normalize_data failed! \n");
+    }
 
-    
-
-    printf("# run_hdrnet!\n");
+    LOGD("# run_hdrnet!\n");
 
     return 0;
 }
