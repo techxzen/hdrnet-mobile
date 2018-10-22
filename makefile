@@ -41,7 +41,7 @@ run: $(BIN_TARGET)
 
 .PHONY:clean
 clean:
-	-rm $(OBJ)
+	-rm $(OBJ_DIR)/*
 	-rm $(BIN_OBJECT)
 	-rm $(BIN_TARGET)
 	-rm *.rgb
