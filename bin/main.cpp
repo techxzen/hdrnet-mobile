@@ -1,32 +1,53 @@
+/*
+*******************************************************************************
+*       Filename:  main.cpp
+*    Description:  cpp file
+*       
+*        Version:  1.0
+*        Created:  2018-10-10
+*         Author:  chencheng
+*
+*        History:  initial draft
+*******************************************************************************
+*/
 
 #include <string>
 #include <iostream>
-#include "hdrnet/Utils.h"
+#include "utils/Utils.h"
 #include "hdrnet/hdrnet_api.h"
-#include "hdrnet/RGBData.h"
 
-#define ROOT_DIR "/home/chen/myworkspace/projects/"
+#define INPUT_FILE_PATH "/home/chen/myworkspace/projects/sample_data/input_2048x2048.rgb"
+#define OUTPUT_FILE_PATH "/home/chen/myworkspace/projects/sample_data/input_2048x2048_output.rgb"
 
 
 int main(int argc, char ** argv)
 {
-    /* input data param */
-    std::string input_file = std::string(ROOT_DIR) + std::string("hdrnet-mobile/../sample_data/input_2048x2048.rgb");
-    std::string output_file = std::string(ROOT_DIR) + std::string("hdrnet-mobile/../sample_data/input_2048x2048_output.rgb");
-    
+    int ret = 0;
+
+    /* input data param */  
+    const char * input_file = INPUT_FILE_PATH;
+    const char * output_file = OUTPUT_FILE_PATH;
+
     int height = 2048;
     int width  = 2048;
+    int size = height * width * 3;
 
-    RGBData<char> rgb_data(height, width);
+    UINT8 * rgb_data = new UINT8 [size];
 
     /* 1. get data */
-    rgb_data.get_data_from_rgb_file(input_file.c_str());
+    ret = read_data_from_rgb_file(rgb_data, size, input_file);
 
-    /* 2. test api: run hdrnet */
-    run_hdrnet(&rgb_data);
+    /* test hdrnet api */
+    ret = setup_hdrnet();
+
+    ret = run_hdrnet(rgb_data, rgb_data, height, width);
+
+    ret = clean_hdrnet();
 
     /* 3. save data */
-    rgb_data.save_data_to_rgb_file(output_file.c_str());
+    ret = write_data_to_rgb_file(rgb_data, size, output_file);
 
-    return 0;
+    delete [] rgb_data;
+
+    return ret;
 }

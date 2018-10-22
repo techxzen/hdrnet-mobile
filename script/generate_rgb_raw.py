@@ -14,7 +14,9 @@ def img_to_rgb(input_path):
 
     input_img = np.flip(input_img, 2)  # OpenCV reads BGR, convert back to RGB.
 
-    height, width ,channel = input_img.shape
+    input_img = np.transpose(input_img, (2,0,1))
+
+    channel, height, width = input_img.shape
 
     ''' save to binary file '''
     input_path_dirname = os.path.dirname(input_path)

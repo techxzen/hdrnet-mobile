@@ -8,7 +8,9 @@ import os
 
 def show_rgb(input_path, height, width):
     input_file = np.fromfile(input_path, dtype=np.uint8)
-    input_file.shape = (height, width, 3)
+    input_file.shape = (3, height, width)
+
+    input_file = np.transpose(input_file, (1, 2, 0))
 
     input_file = np.flip(input_file, 2)  # OpenCV reads BGR, convert back to RGB.
 
