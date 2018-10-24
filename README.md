@@ -8,3 +8,9 @@
 4. 实现桌面linux命令行程序
 5. 开发ndk程序，在手机上跑通
 6. 以cpu代码为参考，开发opencl gpu代码
+
+
+### laplacian strong 2014 tensorflow model
+
+modelname = HDRNetCurves
+

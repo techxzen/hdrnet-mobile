@@ -51,13 +51,14 @@ int resize_image(float * src_img, float * dst_img, int src_height, int src_width
                 int nearest_h = floor(h * h_scale);
                 int nearest_w = floor(w * w_scale);
 
-#ifdef DEBUG
+                #ifdef DEBUG
                 if(nearest_h < 0 || nearest_h > src_height - 1 ||
                     nearest_w < 0 || nearest_w > src_width -1)
                 {
                     LOGE("Error: index out of range.\n");
                 }
-#endif
+                #endif
+                
                 int dst_pos = c * dst_width * dst_height + h * dst_width + w;
                 int src_pos = c * src_width * src_height + nearest_h * src_width + nearest_w;
                                 
