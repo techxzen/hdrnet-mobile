@@ -10,6 +10,9 @@ UTILS_OBJ = $(patsubst %.cpp,${OBJ_DIR}/%.o,$(notdir ${UTILS_SRC}))
 HDRNET_SRC = $(wildcard ${SRC_DIR}/hdrnet/*.cpp)  
 HDRNET_OBJ = $(patsubst %.cpp,${OBJ_DIR}/%.o,$(notdir ${HDRNET_SRC})) 
 
+CNN_SRC = $(wildcard ${SRC_DIR}/cnn/*.cpp)  
+CNN_OBJ = $(patsubst %.cpp,${OBJ_DIR}/%.o,$(notdir ${CNN_SRC})) 
+
 
 TARGET = main
 BIN_TARGET = ${BIN_DIR}/${TARGET}
@@ -21,8 +24,8 @@ CC = g++
 CFLAGS = -std=c++11 -g -Wall -I${INC_DIR} -DDEBUG
 
 # build main
-${BIN_TARGET}: $(BIN_OBJECT) $(UTILS_OBJ) $(HDRNET_OBJ)
-	$(CC) $(BIN_OBJECT) $(UTILS_OBJ) $(HDRNET_OBJ) -o $@
+${BIN_TARGET}: $(BIN_OBJECT) $(UTILS_OBJ) $(HDRNET_OBJ) $(CNN_OBJ)
+	$(CC) $(BIN_OBJECT) $(UTILS_OBJ) $(HDRNET_OBJ) $(CNN_OBJ) -o $@
 
 # build main.o
 $(BIN_OBJECT): $(BIN_FILE)

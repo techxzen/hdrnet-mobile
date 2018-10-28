@@ -10,9 +10,10 @@
 *        History:  initial draft
 *******************************************************************************
 */
-#include "hdrnet/helper.h"
+#include "helper.h"
 #include "hdrnet/hdrnet_api.h"
 #include "hdrnet/preprocess.h"
+#include "hdrnet/flow.h"
 #include "utils/Utils.h"
 #include <cstdio>
 
@@ -38,6 +39,8 @@ int run_hdrnet(UINT8 * src_img, UINT8 * dst_img, int height, int width)
 
     /* resize */
     resize_image(normalized_img, f256x256_img, height, width, 256, 256);
+
+    get_grid(f256x256_img, f256x256_img);
 
     write_data_to_rgb_file(f256x256_img, 256 * 256 * 3, "test.rgb");
 

@@ -11,7 +11,7 @@
 *******************************************************************************
 */
 
-#include "hdrnet/helper.h"
+#include "helper.h"
 #include "hdrnet/preprocess.h"
 #include <cmath>
 
