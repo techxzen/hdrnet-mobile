@@ -16,10 +16,11 @@
 
 #define UINT8 unsigned char
 
-int read_data_from_rgb_file(UINT8 * data, int size, const char * file_name);
+template<typename Type>
+int read_data_from_file(Type * data, int size, const char * file_name);
 
-int write_data_to_rgb_file(UINT8 * data, int size, const char * file_name);
+int write_data_to_file(UINT8 * data, int size, const char * file_name);
 
-int write_data_to_rgb_file(float * data, int size, const char * file_name);
+int write_data_to_file(float * data, int size, const char * file_name);
 
 #endif // __UTILS_H

@@ -35,7 +35,7 @@ int main(int argc, char ** argv)
     UINT8 * rgb_data = new UINT8 [size];
 
     /* 1. get data */
-    ret = read_data_from_rgb_file(rgb_data, size, input_file);
+    ret = read_data_from_file(rgb_data, size, input_file);
 
     /* test hdrnet api */
     ret = setup_hdrnet();
@@ -45,7 +45,7 @@ int main(int argc, char ** argv)
     ret = clean_hdrnet();
 
     /* 3. save data */
-    ret = write_data_to_rgb_file(rgb_data, size, output_file);
+    ret = write_data_to_file(rgb_data, size, output_file);
 
     delete [] rgb_data;
 

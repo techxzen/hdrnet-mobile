@@ -13,7 +13,7 @@
 #include "helper.h"
 #include "hdrnet/hdrnet_api.h"
 #include "hdrnet/preprocess.h"
-#include "hdrnet/flow.h"
+#include "hdrnet/workflow.h"
 #include "utils/Utils.h"
 #include <cstdio>
 
@@ -42,7 +42,10 @@ int run_hdrnet(UINT8 * src_img, UINT8 * dst_img, int height, int width)
 
     get_grid(f256x256_img, f256x256_img);
 
-    write_data_to_rgb_file(f256x256_img, 256 * 256 * 3, "test.rgb");
+    write_data_to_file(f256x256_img, 256 * 256 * 3, "test.rgb");
+
+    /* guide map */
+    generate_guide_map(normalized_img);
 
     /* --- free memory --- */
     delete [] f256x256_img;

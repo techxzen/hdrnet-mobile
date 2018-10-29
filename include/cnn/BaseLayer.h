@@ -6,10 +6,10 @@
 
 struct TensorShape
 {
-    int n;
-    int c;
-    int h;
-    int w;
+    int n; /* #batch */
+    int c; /* #channel */
+    int h; /* #height */
+    int w; /* #width */
 };
 
 

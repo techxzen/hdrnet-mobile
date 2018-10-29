@@ -15,12 +15,7 @@ public:
         // Initialization
     }
 
-    int run() override
-    {
-        LOGD("# ConvolutionLayer Run!\n");
-        LOGD("--input shape: (%d, %d, %d, %d)\n", _input_shape.n, _input_shape.c, _input_shape.h, _input_shape.w);
-        return 0;
-    }
+    int run() override;
 
 public:
     int _kernel_h;
@@ -32,6 +27,13 @@ public:
 };
 
 
+
+int ConvolutionLayer::run()
+{
+    LOGD("# ConvolutionLayer Run!\n");
+    LOGD("--input shape: (%d, %d, %d, %d)\n", _input_shape.n, _input_shape.c, _input_shape.h, _input_shape.w);
+    return 0;
+}
 
 
 #endif //__CONVOLUTIONLAYER_H
