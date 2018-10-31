@@ -6,7 +6,7 @@
 int get_grid(float * in, float * out);
 
 //int generate_guide_map(float * rgb_input, float * guided_map);
-int generate_guide_map(float * full_res);
+int generate_guide_map(float * rgb_input);
 
 
 #endif //__WORKFLOW_H

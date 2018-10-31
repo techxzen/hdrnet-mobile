@@ -25,18 +25,18 @@ CFLAGS = -std=c++11 -g -Wall -I${INC_DIR} -DDEBUG
 
 # build main
 ${BIN_TARGET}: $(BIN_OBJECT) $(UTILS_OBJ) $(HDRNET_OBJ) $(CNN_OBJ)
-	$(CC) $(BIN_OBJECT) $(UTILS_OBJ) $(HDRNET_OBJ) $(CNN_OBJ) -o $@
+	$(CC) $^ -o $@
 
 # build main.o
 $(BIN_OBJECT): $(BIN_FILE)
-	$(CC) $(CFLAGS) -c $(BIN_FILE) -o $(BIN_OBJECT)
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 # build 
 ${OBJ_DIR}/%.o:${SRC_DIR}/hdrnet/%.cpp
-	$(CC) $(CFLAGS) -c  $< -o $@
+	$(CC) $(CFLAGS) -c  $^ -o $@
 
 ${OBJ_DIR}/%.o:${SRC_DIR}/utils/%.cpp
-	$(CC) $(CFLAGS) -c  $< -o $@
+	$(CC) $(CFLAGS) -c  $^ -o $@
 
 run: $(BIN_TARGET)
 	$(BIN_TARGET)
