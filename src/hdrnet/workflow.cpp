@@ -52,7 +52,6 @@ int generate_guide_map(float * full_res)
     int width  = 2048;
 
     // allocate 
-    float * coeff = new float [16 * 16 * 8 * 3 * 4];
     float * guide_out = new float [2048 * 2048];
     float * guide_ref = new float [2048 * 2048];
 
@@ -65,7 +64,6 @@ int generate_guide_map(float * full_res)
     float * channel_mix_bias = new float [1];
 
     // read data
-    read_data_from_file(coeff, 16 * 16 * 8 * 3 * 4, "/home/chen/myworkspace/projects/sample_data/temp/coeffs_16x16x8x3x4.float32");
     read_data_from_file(guide_ref, 16 * 16 * 8 * 3 * 4, "/home/chen/myworkspace/projects/sample_data/temp/guide_2048x2048.float32");
 
     std::string binary_model_dir = "/home/chen/myworkspace/projects/sample_data/pretrained_models/local_laplacian/strong_1024/binaries/";
@@ -147,7 +145,6 @@ int generate_guide_map(float * full_res)
     // free
     delete [] guide_ref;
     delete [] guide_out;
-    delete [] coeff;
 
     delete [] ccm;
     delete [] ccm_bias;
@@ -155,6 +152,117 @@ int generate_guide_map(float * full_res)
     delete [] slopes;
     delete [] channel_mix_bias;
     delete [] channel_mix_weight;
+
+    return 0;
+}
+
+
+int apply_slicing_layer_and_assemble()
+{
+    /* apply_slicing_layer */
+    float * guide_map = new float [2048 * 2048];
+    float * grid = new float [16 * 16 * 8 * 3 * 4];
+    float * img_out = new float [2048 * 2048 * 3];
+    float * img_in  = new float [2048 * 2048 * 3];
+    float * out_ref = new float [2048 * 2048 * 3];
+
+    read_data_from_file(grid, 16 * 16 * 8 * 3 * 4, "/home/chen/myworkspace/projects/sample_data/temp/coeffs_16x16x8x3x4.float32");
+    read_data_from_file(guide_map, 2048 * 2048, "/home/chen/myworkspace/projects/sample_data/temp/guide_2048x2048.float32");
+    read_data_from_file(img_in, 3 * 2048 * 2048, "/home/chen/myworkspace/projects/sample_data/temp/fullres_3x2048x2048.float32");
+    read_data_from_file(out_ref, 3 * 2048 * 2048, "/home/chen/myworkspace/projects/sample_data/temp/out_3x2048x2048.float32");
+
+    int height = 2048;
+    int width = 2048;
+
+    /* Begin to process. */
+    int grid_height = 16;
+    int grid_width  = 16;
+    int grid_depth  = 8;
+    int chans = 12;
+
+    int h_scale = grid_width * grid_depth * chans;
+    int w_scale = grid_depth * chans;
+    int d_scale = chans;
+
+    float * chans_values = new float [chans];
+
+    for (int h = 0; h < height; h++)
+    {
+        for (int w = 0; w < width; w++)
+        {
+            for (int c = 0; c < chans; c++)
+            {
+                float value = 0;
+                float gh = (h + 0.5f) * grid_height / (1.0f * height) - 0.5f;
+                float gw = (w + 0.5f) * grid_width  / (1.0f * width)  - 0.5f;
+                //gd = (guide_map[h * width + w] + 0.5f) * grid_depth / 1.0f - 0.5f; 
+                float gd = guide_map[h * width + w] * grid_depth - 0.5f;
+
+                /* The neighboring position */
+                int fh = static_cast<int>(floor(gh));
+                int fw = static_cast<int>(floor(gw));
+                int fd = static_cast<int>(floor(gd));
+
+                /* The neighboring 8 values, tri-linear interpolation */
+                for (int hh = fh; hh < fh + 2; hh++)
+                {
+                    int h_idx     = std::max(std::min(hh, grid_height - 1), 0);
+                    float h_ratio = std::max(1.0f - std::abs(gh - hh), 0.0f);
+
+                    for (int ww = fw; ww < fw + 2; ww++)
+                    {
+                        int w_idx     = std::max(std::min(ww, grid_width - 1), 0);
+                        float w_ratio = std::max(1.0f - std::abs(gw - ww), 0.0f);
+
+                        for (int dd = fd; dd < fd + 2; dd++)
+                        {
+                            int d_idx = std::max(std::min(dd, grid_depth - 1), 0);
+                            float d_ratio = std::max(1.0f - std::abs(gd - dd), 0.0f);
+
+                            int grid_idx = h_idx * h_scale + w_idx * w_scale + d_idx * d_scale + c;
+                            value += grid[grid_idx] * h_ratio * w_ratio * d_ratio;
+                        }
+                    }
+                }
+
+                chans_values[c] = value;
+            }
+
+            /* RGB format is CHW */
+            float r = img_in[h * width + w];
+            float g = img_in[h * width + w + width * height];
+            float b = img_in[h * width + w + width * height * 2];
+
+            img_out[h * width + w] = chans_values[0] * r + chans_values[1] * g + chans_values[2] * b + chans_values[3];
+            img_out[h * width + w + width * height] = chans_values[4] * r + chans_values[5] * g + chans_values[6] * b + chans_values[7];
+            img_out[h * width + w + width * height * 2] = chans_values[8] * r + chans_values[9] * g + chans_values[10] * b + chans_values[11];
+
+            //return 0;
+        }
+    }
+
+    delete [] chans_values;
+
+    /* Test */
+    printf("img_out:\n");
+    for (int i = 0; i < 10; i++)
+    {
+        printf("%f ", img_out[i]);
+    }
+    printf("\n");
+
+    printf("out_ref:\n");
+    for (int i = 0; i < 10; i++)
+    {
+        printf("%f ", out_ref[i]);
+    }
+    printf("\n");
+
+    /* Free buffers */
+    delete [] guide_map;
+    delete [] grid;
+    delete [] img_out;
+    delete [] img_in;
 
     return 0;
 }

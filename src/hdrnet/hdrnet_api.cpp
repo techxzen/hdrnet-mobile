@@ -47,6 +47,9 @@ int run_hdrnet(UINT8 * src_img, UINT8 * dst_img, int height, int width)
     /* guide map */
     generate_guide_map(normalized_img);
 
+    /* apply slicing layer */
+    apply_slicing_layer_and_assemble();
+
     /* --- free memory --- */
     delete [] f256x256_img;
     delete [] normalized_img;
