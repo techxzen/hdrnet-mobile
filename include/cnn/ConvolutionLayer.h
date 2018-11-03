@@ -5,7 +5,7 @@
 #include "cnn/BaseLayer.h"
 
 
-class ConvolutionLayer: public BaseLayer
+class ConvolutionLayer final : public BaseLayer
 {
 public:
     ConvolutionLayer(float * in, float * out, TensorShape in_shape, TensorShape out_shape, 
@@ -24,14 +24,29 @@ public:
     int _pad_w;
     int _stride_h;
     int _stride_w;
-};
 
+    float * _weight;
+    float * _bias;
+};
 
 
 int ConvolutionLayer::run()
 {
     LOGD("# ConvolutionLayer Run!\n");
-    LOGD("--input shape: (%d, %d, %d, %d)\n", _input_shape.n, _input_shape.c, _input_shape.h, _input_shape.w);
+
+    for (int c = 0; c < _output_shape.c; c++)
+    {
+        for (int h = 0; h < _output_shape.h; h++)
+        {
+            for (int w = 0; w < _output_shape.w; w++)
+            {
+                float result = 0;
+                /* Core computation begins. */
+
+                _output[c * _output_shape.h * _output_shape.w + h * _output_shape.w + w] = result;
+            }
+        }
+    }
     return 0;
 }
 

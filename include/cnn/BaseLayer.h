@@ -10,6 +10,11 @@ struct TensorShape
     int c; /* #channel */
     int h; /* #height */
     int w; /* #width */
+
+    int size() const 
+    {
+        return n * c * h * w;
+    }
 };
 
 
