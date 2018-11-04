@@ -13,8 +13,12 @@
 
 #include "hdrnet/workflow.h"
 #include "cnn/ConvolutionLayer.h"
-#include <vector>
+#include "cnn/FCLayer.h"
+#include "cnn/ReLULayer.h"
+#include "cnn/ReshapeLayer.h"
+#include "cnn/FusionAddLayer.h"
 
+#include <vector>
 #include <string>
 #include <algorithm>
 #include "utils/Utils.h"
@@ -22,18 +26,81 @@
 
 int get_grid(float * in, float * out)
 {
-    std::vector<BaseLayer *> layers;
+    std::vector<ILayer *> layers;
 
     // Create Buffer
     float * buf1 = in;
     float * buf2 = out;
 
     // construct network
-    ConvolutionLayer layer1 = ConvolutionLayer(buf1, buf2, {1,2,3,4}, {1,2,3,4}, 1, 1, 1, 1, 1, 1);
+    /* kh, kw, ph, pw, sh, sw */
+    int kh, kw, ph1, ph2, pw1, pw2, sh, sw;
+    bool relu_flag;
+    bool bias_flag;
+
+
+    /* Low level features */
+    ConvolutionLayer layer1 = ConvolutionLayer(buf1, buf2, {1,3,256,256}, {1,8,128,128}, 
+        kh=3, kw=3, ph1=0, ph2=1, pw1=0, pw2=1, sh=2, sw=2, bias_flag=true, relu_flag=true);
     layers.push_back( &layer1 );
 
-    ConvolutionLayer layer2 = ConvolutionLayer(buf2, buf1, {2,2,3,4}, {1,2,3,4}, 1, 1, 1, 1, 1, 1);
+    ConvolutionLayer layer2 = ConvolutionLayer(buf1, buf2, {1,8,128,128}, {1,16,64,64 }, 
+        kh=3, kw=3, ph1=0, ph2=1, pw1=0, pw2=1, sh=2, sw=2, bias_flag=true, relu_flag=true);
     layers.push_back( &layer2 );
+
+    ConvolutionLayer layer3 = ConvolutionLayer(buf1, buf2, {1,16,64,64 }, {1,32,32,32 },
+        kh=3, kw=3, ph1=0, ph2=1, pw1=0, pw2=1, sh=2, sw=2, bias_flag=true, relu_flag=true);
+    layers.push_back( &layer3 );
+
+    ConvolutionLayer layer4 = ConvolutionLayer(buf1, buf2, {1,32,32,32 }, {1,64,16,16 }, 
+        kh=3, kw=3, ph1=0, ph2=1, pw1=0, pw2=1, sh=2, sw=2, bias_flag=true, relu_flag=true);
+    layers.push_back( &layer4 );
+
+
+    /* Local features */
+    ConvolutionLayer layer5 = ConvolutionLayer(buf1, buf2, {1,64,16,16 }, {1,64,16,16 }, 
+        kh=3, kw=3, ph1=1, ph2=1, pw1=1, pw2=1, sh=1, sw=1, bias_flag=true, relu_flag=true);
+    layers.push_back( &layer5 );
+
+    ConvolutionLayer layer6 = ConvolutionLayer(buf1, buf2, {1,64,16,16 }, {1,64,16,16 }, 
+        kh=3, kw=3, ph1=1, ph2=1, pw1=1, pw2=1, sh=1, sw=1, bias_flag=false, relu_flag=true);
+    layers.push_back( &layer6 );
+
+
+    /* Global features */
+    ConvolutionLayer layer7 = ConvolutionLayer(buf1, buf2, {1,64,16,16 }, {1,64,8,8   },
+        kh=3, kw=3, ph1=0, ph2=1, pw1=0, pw2=1, sh=2, sw=2, bias_flag=true, relu_flag=true);
+    layers.push_back( &layer7 );
+
+    ConvolutionLayer layer8 = ConvolutionLayer(buf1, buf2, {1,64,8,8  }, {1,64,4,4    }, 
+        kh=3, kw=3, ph1=0, ph2=1, pw1=0, pw2=1, sh=2, sw=2, bias_flag=true, relu_flag=true);
+    layers.push_back( &layer8 );
+
+    ReshapeLayer layer9 = ReshapeLayer(buf1, buf2, {1,64,4,4}, {1,1,1,1024}, 0, 2, 3, 1);
+    layers.push_back( &layer9 );
+
+    FCLayer layer10 = FCLayer(buf1, buf2, {1,1,1,1024}, {1,1,1,256});
+    layers.push_back( &layer10 );
+
+    FCLayer layer11 = FCLayer(buf1, buf2, {1,1,1,256}, {1,1,1,128});
+    layers.push_back( &layer11 );
+
+    FCLayer layer12 = FCLayer(buf1, buf2, {1,1,1,128}, {1,1,1,64});
+    layers.push_back( &layer12 );
+
+
+    /* Fusion */
+    FusionAddLayer layer13 = FusionAddLayer(buf1, buf2, {1,1,1,64}, {1,64,16,16});
+    layers.push_back( &layer13 );
+
+    ReLULayer layer14 = ReLULayer(buf1, buf2, {1,64,16,16}, {1,64,16,16});
+    layers.push_back( &layer14 );
+
+
+    /* Prediction */
+    ConvolutionLayer layer15 = ConvolutionLayer(buf1, buf2, {1,64,16,16}, {1,96,16,16}, 
+        kh=1, kw=1, ph1=0, ph2=0, pw1=0, pw2=0, sh=1, sw=1, bias_flag=true, relu_flag=true);
+    layers.push_back( &layer15 );
 
 
     // run network

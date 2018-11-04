@@ -2,23 +2,9 @@
 #ifndef __BASELAYER_H
 #define __BASELAYER_H
 
-#include "helper.h"
+#include "ILayer.h"
 
-struct TensorShape
-{
-    int n; /* #batch */
-    int c; /* #channel */
-    int h; /* #height */
-    int w; /* #width */
-
-    int size() const 
-    {
-        return n * c * h * w;
-    }
-};
-
-
-class BaseLayer
+class BaseLayer : public ILayer
 {
 public:
     BaseLayer(float * in, float * out, TensorShape in_shape, TensorShape out_shape)
@@ -28,8 +14,6 @@ public:
         _input_shape = in_shape;
         _output_shape = out_shape;
     }
-
-    virtual int run() = 0;
 
 public:
     float * _input;

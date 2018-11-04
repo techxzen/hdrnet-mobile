@@ -8,7 +8,7 @@
 class FCLayer final : public BaseLayer
 {
 public:
-    FCLayer(float * in, float * out, TensorShape in_shape, TensorShape out_shape, 
+    FCLayer(float * in, float * out, TensorShape in_shape, TensorShape out_shape
         ) : BaseLayer(in, out, in_shape, out_shape)
     {
         // Initialization
@@ -25,7 +25,7 @@ public:
 int FCLayer::run()
 {
     LOGD("# FCLayer run!\n");
-    
+#if 0
     int in_nodes_num  = _input_shape.w;
     int out_nodes_num = _output_shape.w;
 
@@ -42,6 +42,7 @@ int FCLayer::run()
 
         _output[i] = result;
     }
+#endif
     return 0;
 }
 
