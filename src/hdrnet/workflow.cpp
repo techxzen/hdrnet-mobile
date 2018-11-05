@@ -23,9 +23,18 @@
 #include <algorithm>
 #include "utils/Utils.h"
 
+#define MODEL_DIR "/home/chen/myworkspace/projects/sample_data/pretrained_models/local_laplacian/strong_1024/binaries/"
+
+
+inline std::string get_model_path_string(const char * relative_path)
+{
+    return (std::string(MODEL_DIR) + std::string(relative_path)).c_str();
+}
 
 int get_grid(float * in, float * out)
 {
+    LOGD("# Run AI ...\n");
+
     std::vector<ILayer *> layers;
 
     // Create Buffer
@@ -41,9 +50,12 @@ int get_grid(float * in, float * out)
 
     /* Low level features */
     ConvolutionLayer layer1 = ConvolutionLayer(buf1, buf2, {1,3,256,256}, {1,8,128,128}, 
-        kh=3, kw=3, ph1=0, ph2=1, pw1=0, pw2=1, sh=2, sw=2, bias_flag=true, relu_flag=true);
+        kh=3, kw=3, ph1=0, ph2=1, pw1=0, pw2=1, sh=2, sw=2, bias_flag=true, relu_flag=true,
+        get_model_path_string("inference-coefficients-splat-conv1-weights.float32-3x3x3x8").c_str(), 
+        get_model_path_string("inference-coefficients-splat-conv1-biases.float32-8").c_str());
     layers.push_back( &layer1 );
 
+#if 0
     ConvolutionLayer layer2 = ConvolutionLayer(buf1, buf2, {1,8,128,128}, {1,16,64,64 }, 
         kh=3, kw=3, ph1=0, ph2=1, pw1=0, pw2=1, sh=2, sw=2, bias_flag=true, relu_flag=true);
     layers.push_back( &layer2 );
@@ -56,7 +68,6 @@ int get_grid(float * in, float * out)
         kh=3, kw=3, ph1=0, ph2=1, pw1=0, pw2=1, sh=2, sw=2, bias_flag=true, relu_flag=true);
     layers.push_back( &layer4 );
 
-
     /* Local features */
     ConvolutionLayer layer5 = ConvolutionLayer(buf1, buf2, {1,64,16,16 }, {1,64,16,16 }, 
         kh=3, kw=3, ph1=1, ph2=1, pw1=1, pw2=1, sh=1, sw=1, bias_flag=true, relu_flag=true);
@@ -65,7 +76,6 @@ int get_grid(float * in, float * out)
     ConvolutionLayer layer6 = ConvolutionLayer(buf1, buf2, {1,64,16,16 }, {1,64,16,16 }, 
         kh=3, kw=3, ph1=1, ph2=1, pw1=1, pw2=1, sh=1, sw=1, bias_flag=false, relu_flag=true);
     layers.push_back( &layer6 );
-
 
     /* Global features */
     ConvolutionLayer layer7 = ConvolutionLayer(buf1, buf2, {1,64,16,16 }, {1,64,8,8   },
@@ -101,7 +111,7 @@ int get_grid(float * in, float * out)
     ConvolutionLayer layer15 = ConvolutionLayer(buf1, buf2, {1,64,16,16}, {1,96,16,16}, 
         kh=1, kw=1, ph1=0, ph2=0, pw1=0, pw2=0, sh=1, sw=1, bias_flag=true, relu_flag=true);
     layers.push_back( &layer15 );
-
+#endif
 
     // run network
     for (auto it = layers.begin(); it != layers.end(); it++)

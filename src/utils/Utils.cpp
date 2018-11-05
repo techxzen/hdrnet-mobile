@@ -25,6 +25,8 @@
 template<typename Type>
 int read_data_from_file(Type * data, int size, const char * file_name)
 {
+    printf("%s\n", file_name);
+    printf("size: %d\n", size);
     FILE * fi = fopen(file_name, "r");
     if (fi == NULL)
     {
