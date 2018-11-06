@@ -20,17 +20,23 @@ public:
         int bias_size = _output_shape.c;
 
         _weight = new float [weight_size];
-        _bias = new float [bias_size];
-
         read_data_from_file(_weight, weight_size, weight_file);
-
-        read_data_from_file(_bias, bias_size, bias_file);
+        
+        if (_bias_flag)
+        {
+            _bias = new float [bias_size];
+            read_data_from_file(_bias, bias_size, bias_file);
+        }
     }
 
     ~ConvolutionLayer()
     {
         delete [] _weight;
-        delete [] _bias;
+
+        if (_bias_flag)
+        {
+            delete [] _bias;
+        }
     }
 
     int run() override;

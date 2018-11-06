@@ -44,21 +44,22 @@ int run_hdrnet(UINT8 * src_img, UINT8 * dst_img, int height, int width)
     float * AI_out = new float [8 * 128 * 128];
     float * AI_ref = new float [8 * 128 * 128];
 
-    read_data_from_file(AI_ref, 8 * 128 * 128, "/home/chen/myworkspace/projects/sample_data/temp/conv1.float32-1x8x128x128");
+    //read_data_from_file(AI_ref, 8 * 128 * 128, "/home/chen/myworkspace/projects/sample_data/temp/conv1.float32-1x8x128x128");
+    read_data_from_file(AI_ref, 8 * 128 * 128, "/home/chen/myworkspace/projects/sample_data/temp/local.float32-1x64x16x16");
     read_data_from_file(f256x256_img, 3 * 256 * 256, "/home/chen/myworkspace/projects/sample_data/temp/lowres.float32-3x256x256");
     printf("data ready\n");
     
     get_grid(f256x256_img, AI_out);
 
     printf("conv1_out:\n");
-    for (int i = 20000; i < 20050; i++)
+    for (int i = 0; i < 50; i++)
     {
         printf("%f ", AI_out[i]);
     }
     printf("\n");
 
     printf("conv1_ref:\n");
-    for (int i = 20000; i < 20050; i++)
+    for (int i = 0; i < 50; i++)
     {
         printf("%f ", AI_ref[i]);
     }
