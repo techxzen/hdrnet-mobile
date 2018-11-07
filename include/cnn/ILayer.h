@@ -8,13 +8,13 @@
 struct TensorShape
 {
     int n; /* #batch */
-    int c; /* #channel */
     int h; /* #height */
     int w; /* #width */
+    int c; /* #channel */
 
     int size() const 
     {
-        return n * c * h * w;
+        return n * h * w * c;
     }
 };
 

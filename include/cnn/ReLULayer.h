@@ -23,12 +23,10 @@ int ReLULayer::run()
 {
     LOGD("# ReLULayer run!\n");
 
-#if 0
     for (int i = 0; i < _output_shape.size(); i++)
     {
         _output[i] = (_input[i] > 0) ? _input[i] : 0;
     }
-#endif
 
     return 0;
 }

@@ -68,13 +68,15 @@ int ConvolutionLayer::run()
     int k_w_r1 = _kernel_w / 2;
     int k_w_r2 = _kernel_w / 2;
 
-    for (int c = 0; c < _output_shape.c; c++)
+
+    for (int h = 0; h < _output_shape.h; h++)
     {
-        for (int h = 0; h < _output_shape.h; h++)
+        for (int w = 0; w < _output_shape.w; w++)
         {
-            for (int w = 0; w < _output_shape.w; w++)
+            for (int c = 0; c < _output_shape.c; c++)
             {
-                int output_idx = c * _output_shape.h * _output_shape.w + h * _output_shape.w + w;
+                // NHWC
+                int output_idx = h * _output_shape.w * _output_shape.c + w * _output_shape.c + c;
 
                 float result = 0;
                 
@@ -99,7 +101,7 @@ int ConvolutionLayer::run()
                             }
                             else
                             {
-                                int in_value_idx = in_c * _input_shape.h * _input_shape.w + in_h * _input_shape.w + in_w;
+                                int in_value_idx = in_h * _input_shape.w * _input_shape.c + in_w * _input_shape.c + in_c;
                                 in_value = _input[in_value_idx];
                             }
 

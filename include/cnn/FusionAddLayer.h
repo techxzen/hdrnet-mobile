@@ -23,6 +23,19 @@ int FusionAddLayer::run()
 {
     LOGD("# FusionAddLayer run!\n");
 
+    for (int h = 0; h < _output_shape.h; h++)
+    {
+        for (int w = 0; w < _output_shape.w; w++)
+        {
+            for (int c = 0; c < _output_shape.c; c++)
+            {
+                int out_idx = c + w * _output_shape.c + h * _output_shape.c * _output_shape.w;
+
+                _output[out_idx] = _output[out_idx] + _input[c];
+            }
+        }
+    }
+
     return 0;
 }
 

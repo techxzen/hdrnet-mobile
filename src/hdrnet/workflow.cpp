@@ -51,25 +51,25 @@ int get_grid(float * in, float * out)
     bool bias_flag;
 
     /* Low level features */
-    ConvolutionLayer layer1 = ConvolutionLayer(in_buf, buf1, {1,3,256,256}, {1,8,128,128}, 
+    ConvolutionLayer layer1 = ConvolutionLayer(in_buf, buf1, {1,256,256,3}, {1,128,128,8}, 
         kh=3, kw=3, ph1=0, ph2=1, pw1=0, pw2=1, sh=2, sw=2, bias_flag=true, relu_flag=true,
         get_model_path_string("inference-coefficients-splat-conv1-weights.float32-3x3x3x8").c_str(), 
         get_model_path_string("inference-coefficients-splat-conv1-biases.float32-8").c_str());
     layers.push_back( &layer1 );
 
-    ConvolutionLayer layer2 = ConvolutionLayer(buf1, buf2, {1,8,128,128}, {1,16,64,64 }, 
+    ConvolutionLayer layer2 = ConvolutionLayer(buf1, buf2, {1,128,128,8}, {1,64,64,16 }, 
         kh=3, kw=3, ph1=0, ph2=1, pw1=0, pw2=1, sh=2, sw=2, bias_flag=true, relu_flag=true,
         get_model_path_string("inference-coefficients-splat-conv2-weights.float32-3x3x8x16").c_str(), 
         get_model_path_string("inference-coefficients-splat-conv2-biases.float32-16").c_str());
     layers.push_back( &layer2 );
 
-    ConvolutionLayer layer3 = ConvolutionLayer(buf2, buf1, {1,16,64,64 }, {1,32,32,32 },
+    ConvolutionLayer layer3 = ConvolutionLayer(buf2, buf1, {1,64,64,16 }, {1,32,32,32 },
         kh=3, kw=3, ph1=0, ph2=1, pw1=0, pw2=1, sh=2, sw=2, bias_flag=true, relu_flag=true,
         get_model_path_string("inference-coefficients-splat-conv3-weights.float32-3x3x16x32").c_str(), 
         get_model_path_string("inference-coefficients-splat-conv3-biases.float32-32").c_str());
     layers.push_back( &layer3 );
 
-    ConvolutionLayer layer4 = ConvolutionLayer(buf1, buf2, {1,32,32,32 }, {1,64,16,16 }, 
+    ConvolutionLayer layer4 = ConvolutionLayer(buf1, buf2, {1,32,32,32 }, {1,16,16,64 }, 
         kh=3, kw=3, ph1=0, ph2=1, pw1=0, pw2=1, sh=2, sw=2, bias_flag=true, relu_flag=true,
         get_model_path_string("inference-coefficients-splat-conv4-weights.float32-3x3x32x64").c_str(), 
         get_model_path_string("inference-coefficients-splat-conv4-biases.float32-64").c_str());
@@ -77,56 +77,60 @@ int get_grid(float * in, float * out)
 
     /* Local features */
     // use buf2 as input, buf3 as output
-    ConvolutionLayer layer5 = ConvolutionLayer(buf2, buf1, {1,64,16,16 }, {1,64,16,16 }, 
+    ConvolutionLayer layer5 = ConvolutionLayer(buf2, buf1, {1,16,16,64 }, {1,16,16,64 }, 
         kh=3, kw=3, ph1=1, ph2=1, pw1=1, pw2=1, sh=1, sw=1, bias_flag=true, relu_flag=true,
         get_model_path_string("inference-coefficients-local-conv1-weights.float32-3x3x64x64").c_str(), 
         get_model_path_string("inference-coefficients-local-conv1-biases.float32-64").c_str());
     layers.push_back( &layer5 );
 
-    ConvolutionLayer layer6 = ConvolutionLayer(buf1, buf3, {1,64,16,16 }, {1,64,16,16 }, 
-        kh=3, kw=3, ph1=1, ph2=1, pw1=1, pw2=1, sh=1, sw=1, bias_flag=false, relu_flag=true,
+    ConvolutionLayer layer6 = ConvolutionLayer(buf1, buf3, {1,16,16,64 }, {1,16,16,64 }, 
+        kh=3, kw=3, ph1=1, ph2=1, pw1=1, pw2=1, sh=1, sw=1, bias_flag=false, relu_flag=false,
         get_model_path_string("inference-coefficients-local-conv2-weights.float32-3x3x64x64").c_str(), 
         nullptr);
     layers.push_back( &layer6 );
 
     /* Global features */
-    // also use buf2 as input, buf2 as output
-    ConvolutionLayer layer7 = ConvolutionLayer(buf2, buf1, {1,64,16,16 }, {1,64,8,8   },
+    // also use buf2 as input, buf1 as output
+    ConvolutionLayer layer7 = ConvolutionLayer(buf2, buf1, {1,16,16,64 }, {1,8,8,64   },
         kh=3, kw=3, ph1=0, ph2=1, pw1=0, pw2=1, sh=2, sw=2, bias_flag=true, relu_flag=true,
         get_model_path_string("inference-coefficients-global-conv1-weights.float32-3x3x64x64").c_str(), 
         get_model_path_string("inference-coefficients-global-conv1-biases.float32-64").c_str());
     layers.push_back( &layer7 );
 
-    ConvolutionLayer layer8 = ConvolutionLayer(buf1, buf2, {1,64,8,8  }, {1,64,4,4    }, 
+    ConvolutionLayer layer8 = ConvolutionLayer(buf1, buf2, {1,8,8,64  }, {1,4,4,64    }, 
         kh=3, kw=3, ph1=0, ph2=1, pw1=0, pw2=1, sh=2, sw=2, bias_flag=true, relu_flag=true,
         get_model_path_string("inference-coefficients-global-conv2-weights.float32-3x3x64x64").c_str(), 
         get_model_path_string("inference-coefficients-global-conv2-biases.float32-64").c_str());
     layers.push_back( &layer8 );
 
-    ReshapeLayer layer9 = ReshapeLayer(buf2, buf1, {1,64,4,4}, {1,1,1,1024}, 0, 2, 3, 1);
-    layers.push_back( &layer9 );
-
-    FCLayer layer10 = FCLayer(buf1, buf2, {1,1,1,1024}, {1,1,1,256});
+    FCLayer layer10 = FCLayer(buf2, buf1, {1,1,1,1024}, {1,1,1,256}, bias_flag=true, relu_flag=true,
+        get_model_path_string("inference-coefficients-global-fc1-weights.float32-1024x256").c_str(), 
+        get_model_path_string("inference-coefficients-global-fc1-biases.float32-256").c_str());
     layers.push_back( &layer10 );
 
-    FCLayer layer11 = FCLayer(buf2, buf1, {1,1,1,256}, {1,1,1,128});
+    FCLayer layer11 = FCLayer(buf1, buf2, {1,1,1,256}, {1,1,1,128}, bias_flag=true, relu_flag=true,
+        get_model_path_string("inference-coefficients-global-fc2-weights.float32-256x128").c_str(), 
+        get_model_path_string("inference-coefficients-global-fc2-biases.float32-128").c_str());
     layers.push_back( &layer11 );
 
-    FCLayer layer12 = FCLayer(buf1, buf2, {1,1,1,128}, {1,1,1,64});
+    FCLayer layer12 = FCLayer(buf2, buf1, {1,1,1,128}, {1,1,1,64}, bias_flag=true, relu_flag=false,
+        get_model_path_string("inference-coefficients-global-fc3-weights.float32-128x64").c_str(), 
+        get_model_path_string("inference-coefficients-global-fc3-biases.float32-64").c_str());
     layers.push_back( &layer12 );
 
     /* Fusion of local and global features */
     // merge buf3 and buf2 to buf2, and relu to buf1
-    FusionAddLayer layer13 = FusionAddLayer(buf3, buf2, {1,1,1,64}, {1,64,16,16});
+    FusionAddLayer layer13 = FusionAddLayer(buf1, buf3, {1,1,1,64}, {1,16,16,64});
     layers.push_back( &layer13 );
 
-    ReLULayer layer14 = ReLULayer(buf2, buf1, {1,64,16,16}, {1,64,16,16});
+    ReLULayer layer14 = ReLULayer(buf3, buf1, {1,16,16,64}, {1,16,16,64});
     layers.push_back( &layer14 );
 
-
     /* Prediction */
-    ConvolutionLayer layer15 = ConvolutionLayer(buf1, out_buf, {1,64,16,16}, {1,96,16,16}, 
-        kh=1, kw=1, ph1=0, ph2=0, pw1=0, pw2=0, sh=1, sw=1, bias_flag=true, relu_flag=true);
+    ConvolutionLayer layer15 = ConvolutionLayer(buf1, out_buf, {1,16,16,64}, {1,16,16,96}, 
+        kh=1, kw=1, ph1=0, ph2=0, pw1=0, pw2=0, sh=1, sw=1, bias_flag=true, relu_flag=false,
+        get_model_path_string("inference-coefficients-prediction-conv1-weights.float32-1x1x64x96").c_str(), 
+        get_model_path_string("inference-coefficients-prediction-conv1-biases.float32-96").c_str());
     layers.push_back( &layer15 );
 
     // run network
