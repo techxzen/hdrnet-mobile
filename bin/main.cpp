@@ -16,9 +16,17 @@
 #include "utils/Utils.h"
 #include "hdrnet/hdrnet_api.h"
 
-#define INPUT_FILE_PATH "/home/chen/myworkspace/projects/sample_data/input_2048x2048.rgb"
-#define OUTPUT_FILE_PATH "/home/chen/myworkspace/projects/sample_data/input_2048x2048_output.rgb"
-
+#if 0
+#define INPUT_FILE_PATH "/home/chen/myworkspace/projects/sample_data/input_2048x2048x3.rgb"
+#define OUTPUT_FILE_PATH "/home/chen/myworkspace/projects/sample_data/input_2048x2048x3_output.rgb"
+#define IMG_H 2048
+#define IMG_W 2048
+#else
+#define INPUT_FILE_PATH "/home/chen/myworkspace/projects/sample_data/IMG_20181001_082343_3968x2976x3.rgb"
+#define OUTPUT_FILE_PATH "/home/chen/myworkspace/projects/sample_data/IMG_20181001_082343_3968x2976x3_output.rgb"
+#define IMG_H 3968
+#define IMG_W 2976
+#endif
 
 int main(int argc, char ** argv)
 {
@@ -28,8 +36,8 @@ int main(int argc, char ** argv)
     const char * input_file = INPUT_FILE_PATH;
     const char * output_file = OUTPUT_FILE_PATH;
 
-    int height = 2048;
-    int width  = 2048;
+    int height = IMG_H;
+    int width  = IMG_W;
     int size = height * width * 3;
 
     UINT8 * rgb_data = new UINT8 [size];

@@ -59,8 +59,8 @@ int resize_image(float * src_img, float * dst_img, int src_height, int src_width
                 }
                 #endif
                 
-                int dst_pos = c * dst_width * dst_height + h * dst_width + w;
-                int src_pos = c * src_width * src_height + nearest_h * src_width + nearest_w;
+                int dst_pos = h * dst_width * 3 + w * 3+ c;
+                int src_pos = nearest_h * src_width * 3 + nearest_w * 3 +c;
                                 
                 dst_img[dst_pos]= src_img[src_pos];            
             }

@@ -14,16 +14,14 @@ def img_to_rgb(input_path):
 
     input_img = np.flip(input_img, 2)  # OpenCV reads BGR, convert back to RGB.
 
-    input_img = np.transpose(input_img, (2,0,1))
-
-    channel, height, width = input_img.shape
+    height, width, channel = input_img.shape
 
     ''' save to binary file '''
     input_path_dirname = os.path.dirname(input_path)
     input_path_basename = os.path.basename(input_path)
     input_path_name = input_path_basename.split('.')[0]
     input_path_type = input_path_basename.split('.')[1]
-    output_path = input_path_dirname + '/' + input_path_name + '_%dx%d.rgb' %(height, width)
+    output_path = input_path_dirname + '/' + input_path_name + '_%dx%dx%d.rgb' %(height, width, channel)
     print(input_img.dtype)
     input_img.tofile(output_path)
     print(output_path)

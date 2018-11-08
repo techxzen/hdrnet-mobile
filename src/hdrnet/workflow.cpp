@@ -14,7 +14,7 @@
 #include "cnn/ConvolutionLayer.h"
 #include "cnn/FCLayer.h"
 #include "cnn/ReLULayer.h"
-#include "cnn/ReshapeLayer.h"
+#include "cnn/TransposeLayer.h"
 #include "cnn/FusionAddLayer.h"
 
 #include <vector>
@@ -127,11 +127,21 @@ int get_grid(float * in, float * out)
     layers.push_back( &layer14 );
 
     /* Prediction */
-    ConvolutionLayer layer15 = ConvolutionLayer(buf1, out_buf, {1,16,16,64}, {1,16,16,96}, 
+    ConvolutionLayer layer15 = ConvolutionLayer(buf1, buf2, {1,16,16,64}, {1,16,16,96}, 
         kh=1, kw=1, ph1=0, ph2=0, pw1=0, pw2=0, sh=1, sw=1, bias_flag=true, relu_flag=false,
         get_model_path_string("inference-coefficients-prediction-conv1-weights.float32-1x1x64x96").c_str(), 
         get_model_path_string("inference-coefficients-prediction-conv1-biases.float32-96").c_str());
     layers.push_back( &layer15 );
+
+    /* Transpose */
+    // 16x16x12x8 -> 16x16x8x12
+    TransposeLayer layer16 = TransposeLayer(buf2, buf1, {16, 16, 12, 8}, {16, 16, 8, 12},
+        0, 1, 3, 2);
+    layers.push_back( &layer16 );
+
+    TransposeLayer layer17 = TransposeLayer(buf1, out_buf, {256, 8, 4, 3}, {256, 8, 3, 4},
+        0, 1, 3, 2);
+    layers.push_back( &layer17 );
 
     // run network
     for (auto it = layers.begin(); it != layers.end(); it++)
@@ -148,13 +158,19 @@ int get_grid(float * in, float * out)
 }
 
 
-int generate_guide_map(float * full_res)
+int generate_guide_map(
+    float * full_res, //full res HWC
+    float * guide_out, //full res
+    int height,
+    int width 
+    )
 {
-    int height = 2048;
-    int width  = 2048;
 
+#if 0
     // allocate 
     float * guide_out = new float [2048 * 2048];
+#endif
+
     float * guide_ref = new float [2048 * 2048];
 
     // param
@@ -165,29 +181,22 @@ int generate_guide_map(float * full_res)
     float * channel_mix_weight = new float [3];
     float * channel_mix_bias = new float [1];
 
+#if 1
     // read data
     read_data_from_file(guide_ref, 16 * 16 * 8 * 3 * 4, "/home/chen/myworkspace/projects/sample_data/temp/guide_2048x2048.float32");
+#endif
 
-    std::string binary_model_dir = "/home/chen/myworkspace/projects/sample_data/pretrained_models/local_laplacian/strong_1024/binaries/";
-    std::string file_path = "";
+    read_data_from_file(ccm, 3 * 3, get_model_path_string("inference-guide-ccm.float32-3x3").c_str());
 
-    file_path = binary_model_dir + "inference-guide-ccm.float32-3x3";
-    read_data_from_file(ccm, 3 * 3, file_path.c_str());
-
-    file_path = binary_model_dir + "inference-guide-ccm_bias.float32-3";
-    read_data_from_file(ccm_bias, 3, file_path.c_str());
+    read_data_from_file(ccm_bias, 3, get_model_path_string("inference-guide-ccm_bias.float32-3").c_str());
     
-    file_path = binary_model_dir + "inference-guide-shifts.float32-1x1x3x16";
-    read_data_from_file(shifts, 1 * 1 * 3 * 16, file_path.c_str());
+    read_data_from_file(shifts, 1 * 1 * 3 * 16, get_model_path_string("inference-guide-shifts.float32-1x1x3x16").c_str());
     
-    file_path = binary_model_dir + "inference-guide-slopes.float32-1x1x1x3x16";
-    read_data_from_file(slopes, 1 * 1 * 1 * 3 * 16, file_path.c_str());
+    read_data_from_file(slopes, 1 * 1 * 1 * 3 * 16, get_model_path_string("inference-guide-slopes.float32-1x1x1x3x16").c_str());
 
-    file_path = binary_model_dir + "inference-guide-channel_mixing-weights.float32-1x1x3x1";
-    read_data_from_file(channel_mix_weight, 1 * 1 * 3 * 1, file_path.c_str());
+    read_data_from_file(channel_mix_weight, 1 * 1 * 3 * 1, get_model_path_string("inference-guide-channel_mixing-weights.float32-1x1x3x1").c_str());
 
-    file_path = binary_model_dir + "inference-guide-channel_mixing-biases.float32-1";
-    read_data_from_file(channel_mix_bias, 1, file_path.c_str());
+    read_data_from_file(channel_mix_bias, 1, get_model_path_string("inference-guide-channel_mixing-biases.float32-1").c_str());
 
     // run
     for (int h = 0; h < height; h++)
@@ -195,9 +204,9 @@ int generate_guide_map(float * full_res)
         for (int w = 0; w < width; w++)
         {
             float r, g, b;
-            r = full_res[h * width + w];
-            g = full_res[h * width + w + height * width];
-            b = full_res[h * width + w + height * width * 2];
+            r = full_res[h * width * 3 + w * 3 + 0];
+            g = full_res[h * width * 3 + w * 3 + 1];
+            b = full_res[h * width * 3 + w * 3 + 2];
 
             /* use ccm, create new r, g, b value 
                transpose([new_r, new_g, new_b]) = [r,g,b] * ccm + bias
@@ -246,7 +255,10 @@ int generate_guide_map(float * full_res)
 
     // free
     delete [] guide_ref;
+
+#if 0
     delete [] guide_out;
+#endif
 
     delete [] ccm;
     delete [] ccm_bias;
@@ -259,22 +271,30 @@ int generate_guide_map(float * full_res)
 }
 
 
-int apply_slicing_layer_and_assemble()
+int apply_slicing_layer_and_assemble(
+    float * img_in, // full_res, HWC format
+    float * grid, // coeeff, 16x16x8x3x4
+    float * guide_map, // guide map
+    float * img_out,
+    int height,
+    int width
+    )
 {
+#if 0
     /* apply_slicing_layer */
     float * guide_map = new float [2048 * 2048];
     float * grid = new float [16 * 16 * 8 * 3 * 4];
-    float * img_out = new float [2048 * 2048 * 3];
     float * img_in  = new float [2048 * 2048 * 3];
+#endif
+
     float * out_ref = new float [2048 * 2048 * 3];
 
+#if 0
     read_data_from_file(grid, 16 * 16 * 8 * 3 * 4, "/home/chen/myworkspace/projects/sample_data/temp/coeffs_16x16x8x3x4.float32");
     read_data_from_file(guide_map, 2048 * 2048, "/home/chen/myworkspace/projects/sample_data/temp/guide_2048x2048.float32");
-    read_data_from_file(img_in, 3 * 2048 * 2048, "/home/chen/myworkspace/projects/sample_data/temp/fullres_3x2048x2048.float32");
-    read_data_from_file(out_ref, 3 * 2048 * 2048, "/home/chen/myworkspace/projects/sample_data/temp/out_3x2048x2048.float32");
-
-    int height = 2048;
-    int width = 2048;
+    read_data_from_file(img_in, 3 * 2048 * 2048, "/home/chen/myworkspace/projects/sample_data/temp/fullres_2048x2048x3.float32");
+#endif
+    read_data_from_file(out_ref, 3 * 2048 * 2048, "/home/chen/myworkspace/projects/sample_data/temp/out_2048x2048x3.float32");
 
     /* Begin to process. */
     int grid_height = 16;
@@ -330,14 +350,14 @@ int apply_slicing_layer_and_assemble()
                 chans_values[c] = value;
             }
 
-            /* RGB format is CHW */
-            float r = img_in[h * width + w];
-            float g = img_in[h * width + w + width * height];
-            float b = img_in[h * width + w + width * height * 2];
+            /* RGB format is HWC */
+            float r = img_in[h * width * 3 + w * 3 + 0];
+            float g = img_in[h * width * 3 + w * 3 + 1];
+            float b = img_in[h * width * 3 + w * 3 + 2];
 
-            img_out[h * width + w] = chans_values[0] * r + chans_values[1] * g + chans_values[2] * b + chans_values[3];
-            img_out[h * width + w + width * height] = chans_values[4] * r + chans_values[5] * g + chans_values[6] * b + chans_values[7];
-            img_out[h * width + w + width * height * 2] = chans_values[8] * r + chans_values[9] * g + chans_values[10] * b + chans_values[11];
+            img_out[h * width * 3 + w * 3 + 0] = chans_values[0] * r + chans_values[1] * g + chans_values[2] * b + chans_values[3];
+            img_out[h * width * 3 + w * 3 + 1] = chans_values[4] * r + chans_values[5] * g + chans_values[6] * b + chans_values[7];
+            img_out[h * width * 3 + w * 3 + 2] = chans_values[8] * r + chans_values[9] * g + chans_values[10] * b + chans_values[11];
 
             //return 0;
         }
@@ -360,11 +380,13 @@ int apply_slicing_layer_and_assemble()
     }
     printf("\n");
 
+
     /* Free buffers */
+#if 0
     delete [] guide_map;
     delete [] grid;
-    delete [] img_out;
     delete [] img_in;
+#endif
 
     return 0;
 }
