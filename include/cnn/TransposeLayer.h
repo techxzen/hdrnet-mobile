@@ -37,16 +37,6 @@ int TransposeLayer::run()
     dim_res[2] = _input_shape.c;
     dim_res[3] = 1;
 
-    for (int i = 0; i < 4; i++)
-    {
-        printf("xxxx %d, %d\n", _idx[i], dims[_idx[i]]);
-    }
-
-    for (int i = 0; i < 4; i++)
-    {
-        printf("yyyy %d, %d\n", _idx[i], dim_res[_idx[i]]);
-    }
-
     int out_idx = 0;
     for (int d0 = 0; d0 < dims[_idx[0]]; d0++)
     {

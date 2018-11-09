@@ -22,6 +22,7 @@ BIN_FILE = $(BIN_DIR)/${TARGET}.cpp
 
 CC = g++
 CFLAGS = -std=c++11 -g -Wall -I${INC_DIR} -DDEBUG
+#CFLAGS = -std=c++11 -g -Wall -I${INC_DIR} -DDEBUG -DDEBUG_COMPARE
 
 # build main
 ${BIN_TARGET}: $(BIN_OBJECT) $(UTILS_OBJ) $(HDRNET_OBJ) $(CNN_OBJ)

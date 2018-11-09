@@ -16,7 +16,7 @@
 #include "utils/Utils.h"
 #include "hdrnet/hdrnet_api.h"
 
-#if 0
+#if 1
 #define INPUT_FILE_PATH "/home/chen/myworkspace/projects/sample_data/input_2048x2048x3.rgb"
 #define OUTPUT_FILE_PATH "/home/chen/myworkspace/projects/sample_data/input_2048x2048x3_output.rgb"
 #define IMG_H 2048

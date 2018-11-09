@@ -30,7 +30,7 @@ inline std::string get_model_path_string(const char * relative_path)
     return (std::string(MODEL_DIR) + std::string(relative_path)).c_str();
 }
 
-int get_grid(float * in, float * out)
+int generate_bilateral_grid(float * in, float * out)
 {
     LOGD("# Run AI ...\n");
 
@@ -135,13 +135,9 @@ int get_grid(float * in, float * out)
 
     /* Transpose */
     // 16x16x12x8 -> 16x16x8x12
-    TransposeLayer layer16 = TransposeLayer(buf2, buf1, {16, 16, 12, 8}, {16, 16, 8, 12},
-        0, 1, 3, 2);
+    TransposeLayer layer16 = TransposeLayer(buf2, out_buf, {256, 4, 3, 8}, {256, 8, 3, 4},
+        0, 3, 2, 1);
     layers.push_back( &layer16 );
-
-    TransposeLayer layer17 = TransposeLayer(buf1, out_buf, {256, 8, 4, 3}, {256, 8, 3, 4},
-        0, 1, 3, 2);
-    layers.push_back( &layer17 );
 
     // run network
     for (auto it = layers.begin(); it != layers.end(); it++)
@@ -165,13 +161,9 @@ int generate_guide_map(
     int width 
     )
 {
-
-#if 0
-    // allocate 
-    float * guide_out = new float [2048 * 2048];
-#endif
-
+#ifdef DEBUG_COMPARE
     float * guide_ref = new float [2048 * 2048];
+#endif
 
     // param
     float * ccm = new float [3 * 3];
@@ -181,7 +173,7 @@ int generate_guide_map(
     float * channel_mix_weight = new float [3];
     float * channel_mix_bias = new float [1];
 
-#if 1
+#ifdef DEBUG_COMPARE
     // read data
     read_data_from_file(guide_ref, 16 * 16 * 8 * 3 * 4, "/home/chen/myworkspace/projects/sample_data/temp/guide_2048x2048.float32");
 #endif
@@ -237,6 +229,7 @@ int generate_guide_map(
         }
     }
 
+#ifdef DEBUG_COMPARE
     {
         printf("guide_out:\n");
         for (int i = 0; i < 10; i++)
@@ -252,12 +245,8 @@ int generate_guide_map(
         }
         printf("\n");
     }
-
     // free
     delete [] guide_ref;
-
-#if 0
-    delete [] guide_out;
 #endif
 
     delete [] ccm;
@@ -280,21 +269,10 @@ int apply_slicing_layer_and_assemble(
     int width
     )
 {
-#if 0
-    /* apply_slicing_layer */
-    float * guide_map = new float [2048 * 2048];
-    float * grid = new float [16 * 16 * 8 * 3 * 4];
-    float * img_in  = new float [2048 * 2048 * 3];
-#endif
-
+#ifdef DEBUG_COMPARE
     float * out_ref = new float [2048 * 2048 * 3];
-
-#if 0
-    read_data_from_file(grid, 16 * 16 * 8 * 3 * 4, "/home/chen/myworkspace/projects/sample_data/temp/coeffs_16x16x8x3x4.float32");
-    read_data_from_file(guide_map, 2048 * 2048, "/home/chen/myworkspace/projects/sample_data/temp/guide_2048x2048.float32");
-    read_data_from_file(img_in, 3 * 2048 * 2048, "/home/chen/myworkspace/projects/sample_data/temp/fullres_2048x2048x3.float32");
-#endif
     read_data_from_file(out_ref, 3 * 2048 * 2048, "/home/chen/myworkspace/projects/sample_data/temp/out_2048x2048x3.float32");
+#endif
 
     /* Begin to process. */
     int grid_height = 16;
@@ -308,46 +286,48 @@ int apply_slicing_layer_and_assemble(
 
     float * chans_values = new float [chans];
 
+
     for (int h = 0; h < height; h++)
     {
         for (int w = 0; w < width; w++)
         {
-            for (int c = 0; c < chans; c++)
+            for (int i = 0; i < chans; i++)
             {
-                float value = 0;
-                float gh = (h + 0.5f) * grid_height / (1.0f * height) - 0.5f;
-                float gw = (w + 0.5f) * grid_width  / (1.0f * width)  - 0.5f;
-                //gd = (guide_map[h * width + w] + 0.5f) * grid_depth / 1.0f - 0.5f; 
-                float gd = guide_map[h * width + w] * grid_depth - 0.5f;
+                chans_values[i] = 0;
+            }
 
-                /* The neighboring position */
-                int fh = static_cast<int>(floor(gh));
-                int fw = static_cast<int>(floor(gw));
-                int fd = static_cast<int>(floor(gd));
+            float gh = (h + 0.5f) * grid_height / (1.0f * height) - 0.5f;
+            float gw = (w + 0.5f) * grid_width  / (1.0f * width)  - 0.5f;
+            //gd = (guide_map[h * width + w] + 0.5f) * grid_depth / 1.0f - 0.5f; 
+            float gd = guide_map[h * width + w] * grid_depth - 0.5f;//according to the cuda code
 
-                /* The neighboring 8 values, tri-linear interpolation */
-                for (int hh = fh; hh < fh + 2; hh++)
+            /* The neighboring position */
+            int fh = static_cast<int>(floor(gh));
+            int fw = static_cast<int>(floor(gw));
+            int fd = static_cast<int>(floor(gd));
+
+            /* The neighboring 8 values, tri-linear interpolation */
+            for (int hh = fh; hh < fh + 2; hh++)
+            {
+                int h_idx     = std::max(std::min(hh, grid_height - 1), 0);
+                float h_ratio = std::max(1.0f - std::abs(gh - hh), 0.0f);
+
+                for (int ww = fw; ww < fw + 2; ww++)
                 {
-                    int h_idx     = std::max(std::min(hh, grid_height - 1), 0);
-                    float h_ratio = std::max(1.0f - std::abs(gh - hh), 0.0f);
+                    int w_idx     = std::max(std::min(ww, grid_width - 1), 0);
+                    float w_ratio = std::max(1.0f - std::abs(gw - ww), 0.0f);
 
-                    for (int ww = fw; ww < fw + 2; ww++)
+                    for (int dd = fd; dd < fd + 2; dd++)
                     {
-                        int w_idx     = std::max(std::min(ww, grid_width - 1), 0);
-                        float w_ratio = std::max(1.0f - std::abs(gw - ww), 0.0f);
-
-                        for (int dd = fd; dd < fd + 2; dd++)
+                        int d_idx = std::max(std::min(dd, grid_depth - 1), 0);
+                        float d_ratio = std::max(1.0f - std::abs(gd - dd), 0.0f);
+                        for (int c = 0; c < chans; c++)
                         {
-                            int d_idx = std::max(std::min(dd, grid_depth - 1), 0);
-                            float d_ratio = std::max(1.0f - std::abs(gd - dd), 0.0f);
-
                             int grid_idx = h_idx * h_scale + w_idx * w_scale + d_idx * d_scale + c;
-                            value += grid[grid_idx] * h_ratio * w_ratio * d_ratio;
+                            chans_values[c] += grid[grid_idx] * h_ratio * w_ratio * d_ratio;
                         }
                     }
                 }
-
-                chans_values[c] = value;
             }
 
             /* RGB format is HWC */
@@ -365,6 +345,7 @@ int apply_slicing_layer_and_assemble(
 
     delete [] chans_values;
 
+#ifdef DEBUG_COMPARE
     /* Test */
     printf("img_out:\n");
     for (int i = 0; i < 10; i++)
@@ -380,12 +361,7 @@ int apply_slicing_layer_and_assemble(
     }
     printf("\n");
 
-
-    /* Free buffers */
-#if 0
-    delete [] guide_map;
-    delete [] grid;
-    delete [] img_in;
+    delete [] out_ref;
 #endif
 
     return 0;

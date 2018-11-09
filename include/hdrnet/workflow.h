@@ -3,7 +3,7 @@
 #ifndef __WORKFLOW_H
 #define __WORKFLOW_H
 
-int get_grid(float * in, float * out);
+int generate_bilateral_grid(float * in, float * out);
 
 int generate_guide_map(
     float * full_res, //full res HWC
