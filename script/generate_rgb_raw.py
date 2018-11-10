@@ -6,7 +6,7 @@ import numpy as np
 import os
 
 
-def img_to_rgb(input_path):
+def generate_rgb_raw(input_path):
     input_img = cv2.imread(input_path, -1)
     if input_img.shape[2] == 4:
         log.info("Input {} has 4 channels, dropping alpha".format(input_path))
@@ -26,11 +26,13 @@ def img_to_rgb(input_path):
     input_img.tofile(output_path)
     print(output_path)
 
+    return height, width, output_path
+
 
 
 def main():
     input_path = sys.argv[1]
-    img_to_rgb(input_path)
+    generate_rgb_raw(input_path)
 
 
 

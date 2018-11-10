@@ -33,6 +33,6 @@ for key, shape in var_tuple:
         print(type(weights.dtype))
         print(weights.dtype)
         ''' save to file '''
-        #weights.tofile(dest_path + file_name + '.float32' + '-' + shape_str)
+        weights.tofile(dest_path + file_name + '.float32' + '-' + shape_str)
 
 print(include)

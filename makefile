@@ -1,4 +1,9 @@
 
+#source code Macro definition
+MODEL_DIR=\"/home/chen/myworkspace/projects/sample_data/pretrained_models/local_laplacian/strong_1024/binaries/\"
+
+
+
 INC_DIR = ./include
 SRC_DIR = ./src
 OBJ_DIR = ./obj
@@ -21,8 +26,10 @@ BIN_FILE = $(BIN_DIR)/${TARGET}.cpp
 
 
 CC = g++
-CFLAGS = -std=c++11 -g -Wall -I${INC_DIR} -DDEBUG
+CFLAGS = -std=c++11 -g -Wall -I${INC_DIR} -DMODEL_DIR=$(MODEL_DIR) -DDEBUG
 #CFLAGS = -std=c++11 -g -Wall -I${INC_DIR} -DDEBUG -DDEBUG_COMPARE
+
+
 
 # build main
 ${BIN_TARGET}: $(BIN_OBJECT) $(UTILS_OBJ) $(HDRNET_OBJ) $(CNN_OBJ)
@@ -39,8 +46,10 @@ ${OBJ_DIR}/%.o:${SRC_DIR}/hdrnet/%.cpp
 ${OBJ_DIR}/%.o:${SRC_DIR}/utils/%.cpp
 	$(CC) $(CFLAGS) -c  $^ -o $@
 
+
 run: $(BIN_TARGET)
 	$(BIN_TARGET)
+
 
 
 .PHONY:clean
@@ -50,3 +59,4 @@ clean:
 	-rm $(BIN_TARGET)
 	-rm *.rgb
 	-rm *.rgb.jpg
+	-rm script/*.pyc

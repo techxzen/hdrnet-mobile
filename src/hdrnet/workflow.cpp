@@ -22,8 +22,6 @@
 #include <algorithm>
 #include "utils/Utils.h"
 
-#define MODEL_DIR "/home/chen/myworkspace/projects/sample_data/pretrained_models/local_laplacian/strong_1024/binaries/"
-
 
 inline std::string get_model_path_string(const char * relative_path)
 {

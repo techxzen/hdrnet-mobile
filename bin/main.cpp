@@ -12,6 +12,7 @@
 */
 
 #include <string>
+#include <cstdlib>
 #include <iostream>
 #include "utils/Utils.h"
 #include "hdrnet/hdrnet_api.h"
@@ -33,11 +34,11 @@ int main(int argc, char ** argv)
     int ret = 0;
 
     /* input data param */  
-    const char * input_file = INPUT_FILE_PATH;
-    const char * output_file = OUTPUT_FILE_PATH;
+    const char * input_file = argv[1];
+    const char * output_file = argv[2];
+    int height = atoi(argv[3]);
+    int width  = atoi(argv[4]);
 
-    int height = IMG_H;
-    int width  = IMG_W;
     int size = height * width * 3;
 
     UINT8 * rgb_data = new UINT8 [size];
