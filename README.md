@@ -1,6 +1,6 @@
 
 ### hdrnet-mobile
-#### Intro
+#### Introduction
 
 A C++ implementation of inference part of the essay: *Gharbi, Michaël, et al. "Deep bilateral learning for real-time image enhancement."  ACM Transactions on Graphics (TOG) 36.4 (2017): 118*.
 
