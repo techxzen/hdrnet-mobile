@@ -17,21 +17,16 @@
 #include <cstdio>
 
 
-struct HdrnetHandle
-{
-    HdrnetTask _hdrnet_task;
-};
-
 
 int setup_hdrnet(void ** handle)
 {
     LOGD("# setup_hdrnet\n");
 
-    (*handle) = new HdrnetHandle;
+    (*handle) = new HdrnetTask;
 
-    HdrnetHandle * hdrnet_handle = static_cast<HdrnetHandle *>(* handle);
+    HdrnetTask * hdrnet_task = static_cast<HdrnetTask *>(* handle);
 
-    hdrnet_handle->_hdrnet_task.build_task();
+    hdrnet_task->build_task();
 
     return 0;
 }
@@ -49,9 +44,9 @@ int run_hdrnet(void ** handle, UINT8 * src_img, UINT8 * dst_img, int height, int
     /* normalize */
     normalize_data_to_float(src_img, fullres_img_hwc, size);
 
-    HdrnetHandle * hdrnet_handle = static_cast<HdrnetHandle *>(* handle);
+    HdrnetTask * hdrnet_task = static_cast<HdrnetTask *>(* handle);
 
-    hdrnet_handle->_hdrnet_task.run_task(fullres_img_hwc, fullres_img_hwc, height, width);
+    hdrnet_task->run_task(fullres_img_hwc, fullres_img_hwc, height, width);
 
     convert_float_to_char(fullres_img_hwc, dst_img, size);
 
@@ -63,9 +58,11 @@ int clean_hdrnet(void ** handle)
 {
     LOGD("# clean_hdrnet\n");
 
-    HdrnetHandle * hdrnet_handle = static_cast<HdrnetHandle *>(* handle);
+    HdrnetTask * hdrnet_task = static_cast<HdrnetTask *>(* handle);
 
-    hdrnet_handle->_hdrnet_task.clean_task();
+    hdrnet_task->clean_task();
+
+    delete hdrnet_task;
 
     return 0;
 }
