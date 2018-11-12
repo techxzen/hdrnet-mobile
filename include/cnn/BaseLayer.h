@@ -7,17 +7,19 @@
 class BaseLayer : public ILayer
 {
 public:
-    BaseLayer(float * in, float * out, TensorShape in_shape, TensorShape out_shape)
+    BaseLayer(float ** in, float ** out, TensorShape in_shape, TensorShape out_shape)
     {
         _input = in;
         _output = out;
         _input_shape = in_shape;
         _output_shape = out_shape;
+
+        printf("%p == %p\n", _input, in);
     }
 
 public:
-    float * _input;
-    float * _output;
+    float ** _input;
+    float ** _output;
     TensorShape _input_shape;
     TensorShape _output_shape;
 };

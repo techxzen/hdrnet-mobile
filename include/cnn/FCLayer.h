@@ -8,7 +8,7 @@
 class FCLayer final : public BaseLayer
 {
 public:
-    FCLayer(float * in, float * out, TensorShape in_shape, TensorShape out_shape, bool bias_flag, bool relu_flag,
+    FCLayer(float ** in, float ** out, TensorShape in_shape, TensorShape out_shape, bool bias_flag, bool relu_flag,
             const char * weight_file, const char * bias_file 
         ) : BaseLayer(in, out, in_shape, out_shape), _bias_flag(bias_flag), _relu_flag(relu_flag)
     {
@@ -60,7 +60,7 @@ int FCLayer::run()
         
         for (int i = 0; i < in_nodes_num; i++)
         {
-            result += _input[i] * _weight[i * out_nodes_num + o];
+            result += (*_input)[i] * _weight[i * out_nodes_num + o];
         }
 
         if (_bias_flag)
@@ -73,7 +73,7 @@ int FCLayer::run()
             result = (result > 0) ? result : 0;
         }
 
-        _output[o] = result;
+        (*_output)[o] = result;
     }
 
     return 0;

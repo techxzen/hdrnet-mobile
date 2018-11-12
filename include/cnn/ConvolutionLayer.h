@@ -3,12 +3,12 @@
 #define __CONVOLUTIONLAYER_H
 
 #include "cnn/BaseLayer.h"
-#include "utils/Utils.h"
+#include "helper.h"
 
 class ConvolutionLayer final : public BaseLayer
 {
 public:
-    ConvolutionLayer(float * in, float * out, TensorShape in_shape, TensorShape out_shape, 
+    ConvolutionLayer(float ** in, float ** out, TensorShape in_shape, TensorShape out_shape, 
         int k_h, int k_w, int p_h1, int p_h2, int p_w1, int p_w2, int s_h, int s_w, bool bias_flag, bool relu_flag,
         const char * weight_file, const char * bias_file
         ) : BaseLayer(in, out, in_shape, out_shape), _kernel_h(k_h), _kernel_w(k_w), 
@@ -68,7 +68,6 @@ int ConvolutionLayer::run()
     int k_w_r1 = _kernel_w / 2;
     int k_w_r2 = _kernel_w / 2;
 
-
     for (int h = 0; h < _output_shape.h; h++)
     {
         for (int w = 0; w < _output_shape.w; w++)
@@ -102,7 +101,7 @@ int ConvolutionLayer::run()
                             else
                             {
                                 int in_value_idx = in_h * _input_shape.w * _input_shape.c + in_w * _input_shape.c + in_c;
-                                in_value = _input[in_value_idx];
+                                in_value = (*_input)[in_value_idx];
                             }
 
                             /* get wt_value */
@@ -140,7 +139,7 @@ int ConvolutionLayer::run()
                     result = (result > 0) ? result : 0;
                 }
 
-                _output[output_idx] = result;
+                (*_output)[output_idx] = result;
             }
         }
     }

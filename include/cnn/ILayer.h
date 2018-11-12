@@ -22,6 +22,9 @@ struct TensorShape
 class ILayer
 {
 public:
+    ILayer() = default;
+    virtual ~ILayer() = default;
+
     virtual int run() = 0;
 };
 

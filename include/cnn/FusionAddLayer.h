@@ -9,7 +9,7 @@
 class FusionAddLayer final : public BaseLayer
 {
 public:
-    FusionAddLayer(float * in, float * out, TensorShape in_shape, TensorShape out_shape
+    FusionAddLayer(float ** in, float ** out, TensorShape in_shape, TensorShape out_shape
         ) : BaseLayer(in, out, in_shape, out_shape)
     {
         // Initialization
@@ -31,7 +31,7 @@ int FusionAddLayer::run()
             {
                 int out_idx = c + w * _output_shape.c + h * _output_shape.c * _output_shape.w;
 
-                _output[out_idx] = _output[out_idx] + _input[c];
+                (*_output)[out_idx] = (*_output)[out_idx] + (*_input)[c];
             }
         }
     }

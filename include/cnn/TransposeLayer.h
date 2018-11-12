@@ -9,7 +9,7 @@
 class TransposeLayer final : public BaseLayer
 {
 public:
-    TransposeLayer(float * in, float * out, TensorShape in_shape, TensorShape out_shape,
+    TransposeLayer(float ** in, float ** out, TensorShape in_shape, TensorShape out_shape,
         int idx0, int idx1, int idx2, int idx3) : BaseLayer(in, out, in_shape, out_shape)
     {
         // Initialization
@@ -48,7 +48,7 @@ int TransposeLayer::run()
                 {
                     int in_idx = d0 * dim_res[_idx[0]] + d1 * dim_res[_idx[1]] + 
                                     d2 * dim_res[_idx[2]] + d3 * dim_res[_idx[3]];
-                    _output[out_idx++] = _input[in_idx];
+                    (*_output)[out_idx++] = (*_input)[in_idx];
                 }
             }
         }

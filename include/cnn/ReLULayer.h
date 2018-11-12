@@ -8,7 +8,7 @@
 class ReLULayer final : public BaseLayer
 {
 public:
-    ReLULayer(float * in, float * out, TensorShape in_shape, TensorShape out_shape
+    ReLULayer(float ** in, float ** out, TensorShape in_shape, TensorShape out_shape
         ) : BaseLayer(in, out, in_shape, out_shape)
     {
         // Initialization
@@ -25,7 +25,7 @@ int ReLULayer::run()
 
     for (int i = 0; i < _output_shape.size(); i++)
     {
-        _output[i] = (_input[i] > 0) ? _input[i] : 0;
+        (*_output)[i] = ((*_input)[i] > 0) ? (*_input)[i] : 0;
     }
 
     return 0;
