@@ -47,11 +47,13 @@ int main(int argc, char ** argv)
     ret = read_data_from_file(rgb_data, size, input_file);
 
     /* test hdrnet api */
-    ret = setup_hdrnet();
+    void * handle;
 
-    ret = run_hdrnet(rgb_data, rgb_data, height, width);
+    ret = setup_hdrnet(&handle);
 
-    ret = clean_hdrnet();
+    ret = run_hdrnet(&handle, rgb_data, rgb_data, height, width);
+
+    ret = clean_hdrnet(&handle);
 
     /* 3. save data */
     ret = write_data_to_file(rgb_data, size, output_file);

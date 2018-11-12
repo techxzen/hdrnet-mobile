@@ -14,7 +14,7 @@
 #ifndef __PREPROCESS_H
 #define __PREPROCESS_H
 
-#include "type.h"
+#define UINT8 unsigned char
 
 int normalize_data_to_float(UINT8 * char_data, float * float_data, int size);
 

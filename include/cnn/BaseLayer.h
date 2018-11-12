@@ -13,8 +13,6 @@ public:
         _output = out;
         _input_shape = in_shape;
         _output_shape = out_shape;
-
-        printf("%p == %p\n", _input, in);
     }
 
 public:
