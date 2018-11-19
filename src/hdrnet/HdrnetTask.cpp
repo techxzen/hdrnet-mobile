@@ -7,6 +7,9 @@
 
 int HdrnetTask::build_task()
 {
+    // build network
+    _grid_net.build_network();
+
     // param
     _ccm = new float [3 * 3];
     _ccm_bias = new float [3];
@@ -37,6 +40,10 @@ int HdrnetTask::build_task()
 
 int HdrnetTask::clean_task()
 {
+    // clean network
+    _grid_net.clean_network();
+
+    // release buffer
     delete [] _ccm;
     delete [] _ccm_bias;
     delete [] _shifts;
@@ -120,11 +127,7 @@ int HdrnetTask::generate_bilateral_grid(
 {
     LOGD("# Run AI ...\n");
 
-    _grid_net.build_network();
-
     _grid_net.run_network(in, out);
-
-    _grid_net.clean_network();
 
     return 0;
 }

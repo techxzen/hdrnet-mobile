@@ -6,29 +6,34 @@ A C++ implementation of inference part of the paper: *Gharbi, Michaël, et al. "
 
 #### Usage
 
-1. create binary model dir from tensorflow
+1. create binary model dir from tensorflow ( [pretrained models](https://data.csail.mit.edu/graphics/hdrnet/pretrained_models.zip) )
 ```shell
-python script/get_tfmodel_value.py A_TENSORFLOW_DIR`
+python script/get_tfmodel_value.py
 ```
 2. set binary model dir in makefile
 ```shell
-MODEL_DIR=YOUR_OWN_BINARY_MODEL_DIR`
+MODEL_DIR=YOUR_OWN_BINARY_MODEL_DIR
 ```
 3. build c++ executable 
 ```shell
 make -B
 ```
+
+4. add libhdrnet_api.so to LD_LIBRARY_PATH
+```shell
+export LD_LIBRARY_PATH=$(pwd)/lib:$LD_LIBRARY_PATH
+```
+
 4. test a picture
 ```shell
-python script/run.py A_PICTURE(like xxx.jpg)`
+python script/run.py A_PICTURE(like xxx.jpg)
 ```
 
 #### To be done
 1. optimize the c++ code
-2. build shared library，change the main to a version using shared library
-3. create an Android NDK version
-4. use OpenCL to accelerate
-5. retrain the hdrnet+ model, change it to a post process tensorflow model
+2. create an Android NDK version
+3. use OpenCL to accelerate
+4. retrain the hdrnet+ model, change it to a post process tensorflow model
 
 
 #### Reference

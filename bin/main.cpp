@@ -17,17 +17,6 @@
 #include "utils/Utils.h"
 #include "hdrnet/hdrnet_api.h"
 
-#if 1
-#define INPUT_FILE_PATH "/home/chen/myworkspace/projects/sample_data/input_2048x2048x3.rgb"
-#define OUTPUT_FILE_PATH "/home/chen/myworkspace/projects/sample_data/input_2048x2048x3_output.rgb"
-#define IMG_H 2048
-#define IMG_W 2048
-#else
-#define INPUT_FILE_PATH "/home/chen/myworkspace/projects/sample_data/IMG_20181001_082343_3968x2976x3.rgb"
-#define OUTPUT_FILE_PATH "/home/chen/myworkspace/projects/sample_data/IMG_20181001_082343_3968x2976x3_output.rgb"
-#define IMG_H 3968
-#define IMG_W 2976
-#endif
 
 int main(int argc, char ** argv)
 {

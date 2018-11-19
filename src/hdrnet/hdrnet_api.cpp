@@ -37,7 +37,7 @@ int run_hdrnet(void ** handle, UINT8 * src_img, UINT8 * dst_img, int height, int
 
     int ret = 0;
 
-    /* --- memory allocate --- */
+    /* memory allocate */
     int size = height * width * 3;
     float * fullres_img_hwc = new float [size];
 
