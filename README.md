@@ -21,7 +21,7 @@ make -B
 export LD_LIBRARY_PATH=$(pwd)/lib:$LD_LIBRARY_PATH
 ```
 
-5. test a picture
+4. test a picture
 ```shell
 python script/run.py A_PICTURE(like xxx.jpg) your_binary_model_dir
 ```
