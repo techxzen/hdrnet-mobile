@@ -4,23 +4,29 @@
 
 #include "cnn/ILayer.h"
 #include <vector>
+#include <string>
 
-class GridNet final
+class GridNet
 {
 public:
-    GridNet();
+    GridNet(const char * model_dir);
 
-    ~GridNet() = default;
-
-    int build_network();
+    ~GridNet();
 
     int run_network(float * input, float * output);
-    
-    int clean_network();
+
+
+protected:
+    inline std::string get_model_path_string(const char * relative_path)
+    {
+        return (std::string(_model_dir) + std::string("/") + std::string(relative_path)).c_str();
+    }
+
+    const char * _model_dir;
 
 private:
     std::vector<ILayer *> _layers;
-    
+
     float ** _input_ptr_ptr;
     float ** _output_ptr_ptr;
     float * _input_ptr;

@@ -4,18 +4,15 @@
 
 #include "hdrnet/GridNet.h"
 
-class HdrnetTask
+
+class HdrnetTask : public GridNet
 {
 public:
-    HdrnetTask() = default;
+    HdrnetTask(const char * model_dir);
     
-    ~HdrnetTask() = default;
-
-    int build_task();
+    ~HdrnetTask();
 
     int run_task(float * in, float * out, int height, int width);
-    
-    int clean_task();
 
 private:
     int resize(float * src, float * dst, int src_height, int src_width, int dst_height, int dst_width);
@@ -42,8 +39,6 @@ private:
         );
 
 private:
-    GridNet _grid_net;
-
     float * _ccm;
     float * _ccm_bias;
     float * _shifts;

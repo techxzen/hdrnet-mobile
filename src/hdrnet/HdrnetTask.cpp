@@ -5,11 +5,8 @@
 #include <algorithm>
 #include "helper.h"
 
-int HdrnetTask::build_task()
+HdrnetTask::HdrnetTask(const char * model_dir) : GridNet(model_dir)
 {
-    // build network
-    _grid_net.build_network();
-
     // param
     _ccm = new float [3 * 3];
     _ccm_bias = new float [3];
@@ -34,15 +31,11 @@ int HdrnetTask::build_task()
     _lowres_img_hwc = new float [256 * 256 * 3];
     _bilateral_grid = new float [16 * 16 * 96];
 
-    return 0;
 }
 
 
-int HdrnetTask::clean_task()
+HdrnetTask::~HdrnetTask()
 {
-    // clean network
-    _grid_net.clean_network();
-
     // release buffer
     delete [] _ccm;
     delete [] _ccm_bias;
@@ -51,7 +44,6 @@ int HdrnetTask::clean_task()
     delete [] _channel_mix_bias;
     delete [] _channel_mix_weight;
 
-    return 0;
 }
 
 
@@ -127,7 +119,7 @@ int HdrnetTask::generate_bilateral_grid(
 {
     LOGD("# Run AI ...\n");
 
-    _grid_net.run_network(in, out);
+    run_network(in, out);
 
     return 0;
 }

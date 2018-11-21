@@ -10,6 +10,11 @@ import show_rgb
 def main():
     img_file = sys.argv[1]
 
+    if (len(sys.argv) > 2):
+        model_dir = sys.argv[2]
+    else:
+        model_dir = "/home/chen/myworkspace/projects/sample_data/pretrained_models/local_laplacian/strong_1024/binaries/"
+
     # create input rgb
     h, w, rgb_file = generate_rgb_raw.generate_rgb_raw(img_file)
     out_file = rgb_file + '.output'
@@ -17,6 +22,7 @@ def main():
     # run main
     cmd = ''
     cmd += './bin/main '
+    cmd += '%s ' %(model_dir)
     cmd += '%s ' %(rgb_file)
     cmd += '%s ' %(out_file)
     cmd += '%d ' %(h)

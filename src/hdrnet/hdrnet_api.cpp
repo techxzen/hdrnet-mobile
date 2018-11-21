@@ -18,15 +18,11 @@
 
 
 
-int setup_hdrnet(void ** handle)
+int setup_hdrnet(void ** handle, const char * model_dir)
 {
     LOGD("# setup_hdrnet\n");
 
-    (*handle) = new HdrnetTask;
-
-    HdrnetTask * hdrnet_task = static_cast<HdrnetTask *>(* handle);
-
-    hdrnet_task->build_task();
+    (*handle) = new HdrnetTask(model_dir);
 
     return 0;
 }
@@ -59,8 +55,6 @@ int clean_hdrnet(void ** handle)
     LOGD("# clean_hdrnet\n");
 
     HdrnetTask * hdrnet_task = static_cast<HdrnetTask *>(* handle);
-
-    hdrnet_task->clean_task();
 
     delete hdrnet_task;
 

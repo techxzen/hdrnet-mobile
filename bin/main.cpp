@@ -21,12 +21,13 @@
 int main(int argc, char ** argv)
 {
     int ret = 0;
-
-    /* input data param */  
-    const char * input_file = argv[1];
-    const char * output_file = argv[2];
-    int height = atoi(argv[3]);
-    int width  = atoi(argv[4]);
+    const char * model_dir = argv[1];
+    
+    /* input data param */
+    const char * input_file = argv[2];
+    const char * output_file = argv[3];
+    int height = atoi(argv[4]);
+    int width  = atoi(argv[5]);
 
     int size = height * width * 3;
 
@@ -35,10 +36,10 @@ int main(int argc, char ** argv)
     /* 1. get data */
     ret = read_data_from_file(rgb_data, size, input_file);
 
-    /* test hdrnet api */
+    /* 2. test hdrnet api */
     void * handle;
 
-    ret = setup_hdrnet(&handle);
+    ret = setup_hdrnet(&handle, model_dir);
 
     ret = run_hdrnet(&handle, rgb_data, rgb_data, height, width);
 

@@ -16,7 +16,7 @@
 
 
 /* HDRNET_Setup */
-int setup_hdrnet(void ** handle);
+int setup_hdrnet(void ** handle, const char * model_dir);
 
 /* HDRNET_Run */
 int run_hdrnet(void ** handle, unsigned char * src_data, unsigned char * dst_data, int height, int width);

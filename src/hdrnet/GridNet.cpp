@@ -11,31 +11,7 @@
 #include <string>
 
 
-GridNet::GridNet()
-{
-    _input_ptr_ptr = NULL;
-    _input_ptr = NULL;
-}
-
-
-int GridNet::clean_network()
-{
-    for (auto it = _layers.begin(); it != _layers.end(); it++)
-    {
-        delete (*it);
-    }
-
-    _layers.clear();
-
-    delete [] _buf1;
-    delete [] _buf2;
-    delete [] _buf3;
-
-    return 0;
-}
-
-
-int GridNet::build_network()
+GridNet::GridNet(const char * model_dir):_model_dir(model_dir)
 {
     _input_ptr_ptr = &_input_ptr;
     _output_ptr_ptr = &_output_ptr;
@@ -142,7 +118,22 @@ int GridNet::build_network()
         0, 3, 2, 1);
     _layers.push_back( layer16 );
 
-    return 0;
+}
+
+
+GridNet::~GridNet()
+{
+    for (auto it = _layers.begin(); it != _layers.end(); it++)
+    {
+        delete (*it);
+    }
+
+    _layers.clear();
+
+    delete [] _buf1;
+    delete [] _buf2;
+    delete [] _buf3;
+
 }
 
 

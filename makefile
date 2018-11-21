@@ -1,8 +1,4 @@
 
-#source code Macro definition
-MODEL_DIR=\"/home/chen/myworkspace/projects/sample_data/pretrained_models/local_laplacian/strong_1024/binaries/\"
-
-
 INC_DIR = ./include
 SRC_DIR = ./src
 OBJ_DIR = ./obj

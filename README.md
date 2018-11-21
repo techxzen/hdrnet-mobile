@@ -10,23 +10,20 @@ A C++ implementation of inference part of the paper: *Gharbi, Michaël, et al. "
 ```shell
 python script/get_tfmodel_value.py
 ```
-2. set binary model dir in makefile
-```shell
-MODEL_DIR=YOUR_OWN_BINARY_MODEL_DIR
-```
-3. build c++ executable 
+
+2. build shared library and c++ executable 
 ```shell
 make -B
 ```
 
-4. add libhdrnet_api.so to LD_LIBRARY_PATH
+3. add libhdrnet_api.so to LD_LIBRARY_PATH
 ```shell
 export LD_LIBRARY_PATH=$(pwd)/lib:$LD_LIBRARY_PATH
 ```
 
 4. test a picture
 ```shell
-python script/run.py A_PICTURE(like xxx.jpg)
+python script/run.py A_PICTURE(like xxx.jpg) your_binary_model_dir
 ```
 
 #### To be done
