@@ -14,7 +14,6 @@
 #include <string>
 #include <cstdlib>
 #include <iostream>
-#include "utils/Utils.h"
 #include "hdrnet/hdrnet_api.h"
 
 
@@ -31,22 +30,22 @@ int main(int argc, char ** argv)
 
     int size = height * width * 3;
 
-    UINT8 * rgb_data = new UINT8 [size];
+    unsigned char * rgb_data = new unsigned char [size];
 
     /* 1. get data */
-    ret = read_data_from_file(rgb_data, size, input_file);
+    ret = HDRNET_read_data_from_file(rgb_data, size, input_file);
 
     /* 2. test hdrnet api */
     void * handle;
 
-    ret = setup_hdrnet(&handle, model_dir);
+    ret = HDRNET_setup(&handle, model_dir);
 
-    ret = run_hdrnet(&handle, rgb_data, rgb_data, height, width);
+    ret = HDRNET_run(&handle, rgb_data, rgb_data, height, width);
 
-    ret = clean_hdrnet(&handle);
+    ret = HDRNET_clean(&handle);
 
     /* 3. save data */
-    ret = write_data_to_file(rgb_data, size, output_file);
+    ret = HDRNET_write_data_to_file(rgb_data, size, output_file);
 
     delete [] rgb_data;
 

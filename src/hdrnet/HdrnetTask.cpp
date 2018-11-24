@@ -3,6 +3,7 @@
 #include "utils/Utils.h"
 
 #include <algorithm>
+#include <cmath>
 #include "helper.h"
 
 HdrnetTask::HdrnetTask(const char * model_dir) : GridNet(model_dir)

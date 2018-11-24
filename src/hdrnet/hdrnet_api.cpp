@@ -18,7 +18,7 @@
 
 
 
-int setup_hdrnet(void ** handle, const char * model_dir)
+int HDRNET_setup(void ** handle, const char * model_dir)
 {
     LOGD("# setup_hdrnet\n");
 
@@ -27,7 +27,7 @@ int setup_hdrnet(void ** handle, const char * model_dir)
     return 0;
 }
 
-int run_hdrnet(void ** handle, UINT8 * src_img, UINT8 * dst_img, int height, int width)
+int HDRNET_run(void ** handle, UINT8 * src_img, UINT8 * dst_img, int height, int width)
 {
     LOGD("# run_hdrnet!\n");
 
@@ -50,7 +50,7 @@ int run_hdrnet(void ** handle, UINT8 * src_img, UINT8 * dst_img, int height, int
 }
 
 
-int clean_hdrnet(void ** handle)
+int HDRNET_clean(void ** handle)
 {
     LOGD("# clean_hdrnet\n");
 
@@ -59,4 +59,25 @@ int clean_hdrnet(void ** handle)
     delete hdrnet_task;
 
     return 0;
+}
+
+
+int HDRNET_read_data_from_file(UINT8 * data, int size, const char * file_name)
+{
+    return read_data_from_file(data, size, file_name);
+}
+
+int HDRNET_read_data_from_file(float * data, int size, const char * file_name)
+{
+    return read_data_from_file(data, size, file_name);
+}
+
+int HDRNET_write_data_to_file(UINT8 * data, int size, const char * file_name)
+{
+    return write_data_to_file(data, size, file_name);
+}
+
+int HDRNET_write_data_to_file(float * data, int size, const char * file_name)
+{
+    return write_data_to_file(data, size, file_name);
 }

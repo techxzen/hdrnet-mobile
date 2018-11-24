@@ -46,6 +46,12 @@ ${OBJ_DIR}/%.o:${SRC_DIR}/utils/%.cpp
 	$(CC) $(CFLAGS) -c  $^ -o $@
 
 
+ndk-dll:
+	ndk-build -C ndk/dll/jni -B
+
+ndk-main:
+	ndk-build -C ndk/main/jni -B
+
 .PHONY:clean
 clean:
 	-rm -rf $(OBJ_DIR)
@@ -55,3 +61,11 @@ clean:
 	-rm *.rgb.jpg
 	-rm *.so
 	-rm script/*.pyc
+	-rm -rf ndk/dll/libs
+	-rm -rf ndk/dll/obj
+	-rm -rf ndk/main/libs
+	-rm -rf ndk/main/obj
+
+
+
+
