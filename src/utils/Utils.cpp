@@ -27,14 +27,18 @@ int read_data_from_file(Type * data, int size, const char * file_name)
 {
     printf("%s\n", file_name);
     printf("size: %d\n", size);
-    FILE * fi = fopen(file_name, "r");
+    FILE * fi = fopen(file_name, "rb");
     if (fi == NULL)
     {
         LOGE("Error: file open error! %s\n", file_name);
         return -1;
     }
 
-    fread(data, sizeof(Type), size,  fi);
+    int rsize = fread(data, sizeof(Type), size,  fi);
+    if (rsize != size)
+    {
+        LOGE("Error: fread failed! %s\n", __FUNCTION__);
+    }
 
     fclose(fi);
 

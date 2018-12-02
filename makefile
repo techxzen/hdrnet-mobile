@@ -23,13 +23,13 @@ BIN_FILE = $(BIN_DIR)/${TARGET}.cpp
 
 
 CC = g++
-CFLAGS = -std=c++11 -g -Wall -fPIC -I${INC_DIR} -DMODEL_DIR=$(MODEL_DIR) -DDEBUG
+CFLAGS = -std=c++11 -O3 -Wall -fPIC -I${INC_DIR} -DMODEL_DIR=$(MODEL_DIR) -DDEBUG
 
 
 
 # build main
 ${BIN_TARGET}: $(SO_FILE)
-	$(CC) $(CFLAGS) $(BIN_FILE) -L $(LIB_DIR) -l$(SO_NAME) -o $@
+	$(CC) $(CFLAGS) $(BIN_FILE) -L $(LIB_DIR) -l$(SO_NAME) -o $@ -ldl
 
 # so file
 $(SO_FILE): $(UTILS_OBJ) $(HDRNET_OBJ) $(CNN_OBJ)

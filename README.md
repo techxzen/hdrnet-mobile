@@ -15,13 +15,7 @@ python script/get_tfmodel_value.py
 ```shell
 make -B
 ```
-
-3. add libhdrnet_api.so to LD_LIBRARY_PATH
-```shell
-export LD_LIBRARY_PATH=$(pwd)/lib:$LD_LIBRARY_PATH
-```
-
-4. test a picture
+3. test a picture
 ```shell
 python script/run.py A_PICTURE(like xxx.jpg) your_binary_model_dir
 ```

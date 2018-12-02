@@ -15,13 +15,16 @@ def main():
     else:
         model_dir = "/home/chen/myworkspace/projects/sample_data/pretrained_models/local_laplacian/strong_1024/binaries/"
 
+    project_dir = "/home/chen/myworkspace/projects/hdrnet-mobile/"
+
     # create input rgb
     h, w, rgb_file = generate_rgb_raw.generate_rgb_raw(img_file)
     out_file = rgb_file + '.output'
 
     # run main
     cmd = ''
-    cmd += './bin/main '
+    cmd += project_dir + 'bin/main '
+    cmd += project_dir + 'lib/libhdrnet_api.so '
     cmd += '%s ' %(model_dir)
     cmd += '%s ' %(rgb_file)
     cmd += '%s ' %(out_file)

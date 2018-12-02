@@ -46,6 +46,8 @@ int HDRNET_run(void ** handle, UINT8 * src_img, UINT8 * dst_img, int height, int
 
     convert_float_to_char(fullres_img_hwc, dst_img, size);
 
+    delete [] fullres_img_hwc;
+
     return ret;
 }
 
@@ -62,22 +64,22 @@ int HDRNET_clean(void ** handle)
 }
 
 
-int HDRNET_read_data_from_file(UINT8 * data, int size, const char * file_name)
+int HDRNET_read_uchar_data_from_file(UINT8 * data, int size, const char * file_name)
 {
     return read_data_from_file(data, size, file_name);
 }
 
-int HDRNET_read_data_from_file(float * data, int size, const char * file_name)
+int HDRNET_read_float_data_from_file(float * data, int size, const char * file_name)
 {
     return read_data_from_file(data, size, file_name);
 }
 
-int HDRNET_write_data_to_file(UINT8 * data, int size, const char * file_name)
+int HDRNET_write_uchar_data_to_file(UINT8 * data, int size, const char * file_name)
 {
     return write_data_to_file(data, size, file_name);
 }
 
-int HDRNET_write_data_to_file(float * data, int size, const char * file_name)
+int HDRNET_write_float_data_to_file(float * data, int size, const char * file_name)
 {
     return write_data_to_file(data, size, file_name);
 }
