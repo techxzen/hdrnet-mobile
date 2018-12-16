@@ -1,6 +1,6 @@
 #### 典型tensorflow模型文件夹
 
-![tf_model_dir](/home/chen/myworkspace/projects/hdrnet-mobile/doc/img/tensorflow_model_dir.png)
+![tf_model_dir](/home/chen/myworkspace/projects/hdrnet-mobile/docs/img/tensorflow_model_dir.png)
 
 包括4个文件：
 
